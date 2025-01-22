@@ -9,7 +9,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   return (
-    <div className="border rounded-lg p-4  hover:bg-grey transition duration-300">
+    <div className="border rounded-lg p-4 transition duration-300">
       <div className="flex justify-between items-center">
         <span className="text-sm text-gray-500">{post.subreddit}</span>
         <span className="text-xs text-gray-400">{post.createdAt}</span>
@@ -20,6 +20,18 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </Link>
       </h2>
       <p className="text-sm text-gray-700 mt-1 line-clamp-2">{post.content}</p>
+
+      {/* Image Section */}
+      {post.image && (
+        <div className="mt-3">
+          <img
+            src={post.image}
+            alt={post.title}
+            className="w-full h-auto rounded-lg object-cover"
+          />
+        </div>
+      )}
+
       <div className="flex items-center justify-between mt-3">
         <div className="flex items-center space-x-3">
           <span className="text-gray-600 text-sm">{post.upvotes} upvotes</span>

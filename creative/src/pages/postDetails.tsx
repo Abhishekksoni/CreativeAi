@@ -9,24 +9,19 @@ const PostDetailsPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    // <div className=" mx-auto py-6">
-    //     <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-    //   <h1 className="text-2xl font-bold mb-4">Post Details</h1>
-    //   <p className="text-gray-700">Detailed content for post ID: {postId}</p>
-    //   {/* Add more details and layout as needed */}
-    // </div>
+   
     <div className="flex flex-col h-screen relative">
     {/* Navbar at the top */}
-    <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+    {/* <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} /> */}
 
     <div className="flex flex-1 mt-[60px] relative">
         {/* Sidebar Section */}
         <aside
-            className={`fixed top-14 inset-y-0 left-0 w-64 bg-white dark:bg-black border-r transition-transform duration-300 transform
+            className={`fixed top-14 inset-y-0 left-0 w-40 bg-white dark:bg-black border-r transition-transform duration-300 transform
     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
     lg:translate-x-0 z-40`}
         >
-            <SidebarComponent />
+            /
         </aside>
 
         {/* Overlay for smaller screens */}
@@ -39,7 +34,7 @@ const PostDetailsPage: React.FC = () => {
 
         {/* Main Post Content Section */}
         <main
-           
+            className="flex-1 p-6 overflow-y-auto flex-col items-center justify-center transition-all duration-300 lg:ml-[250px]"
         >
            <h1 className="text-2xl font-bold mb-4">Post Details</h1>
            <p className="text-gray-700">Detailed content for post ID: {postId}</p>

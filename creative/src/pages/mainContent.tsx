@@ -14,6 +14,7 @@ const MainContentPage: React.FC = () => {
       comments: 25,
       createdAt: "2 hours ago",
       content: "React performance optimization can be achieved through lazy loading, memoization, and more.",
+      image: "https://media2.dev.to/dynamic/image/width=775%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F5l0p991kt5vziivrqxyk.png", // Example image
     },
     {
       id: 2,
@@ -25,7 +26,17 @@ const MainContentPage: React.FC = () => {
       createdAt: "1 day ago",
       content: "TypeScript 5.0 introduces significant performance boosts and new language features...",
     },
-    // Add more dummy posts here
+    {
+      id: 3,
+      title: "What's new in Tailwind CSS 3.0?",
+      author: "csspro",
+      subreddit: "r/css",
+      upvotes: 120,
+      comments: 15,
+      createdAt: "3 days ago",
+      content: "Tailwind CSS 3.0 comes with new utilities and performance improvements.",
+      image: "https://media2.dev.to/dynamic/image/width=775%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F5l0p991kt5vziivrqxyk.png", // Example image
+    },
   ]);
 
   return (
