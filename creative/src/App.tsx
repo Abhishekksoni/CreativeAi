@@ -5,21 +5,28 @@ import { Navbar } from "./components/navbar";
 import DashboardLayout from "./pages/dashboard";
 import PostDetailsPage from "./pages/postDetails";
 import { useState } from "react";
+import { AuthProvider } from "./components/authContext";
+import Login from "./pages/login";
+import Profile from "./pages/profile";
 
 function App() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
+    <AuthProvider>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Router>
         <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         <Routes>
           <Route path="/" element={<DashboardLayout/>} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="/profile" element={<Profile/>} />
           <Route path="/post/:postId" element={<PostDetailsPage />} />
           <Route path="/about" element={<h1>About Page</h1>} />
           <Route path="/contact" element={<h1>Contact Page</h1>} />
         </Routes>
       </Router>
     </ThemeProvider>
+    </AuthProvider>
   );
 }
 

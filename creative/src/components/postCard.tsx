@@ -1,7 +1,8 @@
 import { Post } from "@/types/post";
 import React from "react";
-
 import { Link } from "react-router-dom"; // Assuming React Router for navigation
+import { Icons } from "./icons";
+
 
 interface PostCardProps {
   post: Post;
@@ -9,19 +10,38 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   return (
+    // <Link to={`/post/${post.id}`} >
     <div className="border rounded-lg p-4 transition duration-300">
+          <Link to={`/post/${post.id}`} >
+      {/* Author and Date */}
       <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-500">{post.subreddit}</span>
+        <div className="flex items-center space-x-2">
+          {post.authorImage && (
+            <img
+              src={post.authorImage}
+              alt={post.author}
+              className="w-6 h-6 rounded-full object-cover"
+            />
+          )}
+           <Link to="/dashboard" className="hover:underline">
+          <span className="text-sm">{post.author}</span>
+          </Link>
+        </div>
         <span className="text-xs text-gray-400">{post.createdAt}</span>
       </div>
+
+      {/* Post Title */}
       <h2 className="text-lg font-semibold mt-2">
-        <Link to={`/post/${post.id}`} className="text-blue-600 hover:underline">
+        <Link to={`/post/${post.id}`} className="hover:underline">
           {post.title}
         </Link>
       </h2>
-      <p className="text-sm text-gray-700 mt-1 line-clamp-2">{post.content}</p>
 
-      {/* Image Section */}
+      {/* Post Content */}
+      <p className="text-sm mt-1 line-clamp-2">{post.content}</p>
+
+      {/* Post Image */}
+      <Link to={`/post/${post.id}`} className="hover:underline">
       {post.image && (
         <div className="mt-3">
           <img
@@ -31,15 +51,36 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           />
         </div>
       )}
-
+</Link>
+      {/* Interaction Icons */}
       <div className="flex items-center justify-between mt-3">
-        <div className="flex items-center space-x-3">
-          <span className="text-gray-600 text-sm">{post.upvotes} upvotes</span>
-          <span className="text-gray-600 text-sm">{post.comments} comments</span>
+        <div className="flex items-center space-x-6">
+          {/* Like Icon */}
+          <div className="flex items-center space-x-1  cursor-pointer hover:text-gray-800">
+            <Icons.reaction className="w-5 h-5" />
+            {/* <span className="text-sm">Like</span> */}
+          </div>
+
+          {/* Comment Icon */}
+          <div className="flex items-center space-x-1  cursor-pointer hover:text-gray-800">
+            <Icons.comment className="w-5 h-5" />
+            <span className="text-sm">{post.comments}</span>
+          </div>
+          {/* Comment Icon */}
+          <div className="flex items-center space-x-1  cursor-pointer hover:text-gray-800">
+            <Icons.save className="w-5 h-5" />
+            {/* <span className="text-sm">{post.comments}</span> */}
+          </div>
         </div>
-        <span className="text-sm text-gray-500">by {post.author}</span>
+
+        {/* Save Icon */}
+        <div className="cursor-pointer hover:text-gray-800">
+          <Icons.share className="w-5 h-5" />
+        </div>
       </div>
+      </Link>
     </div>
+
   );
 };
 

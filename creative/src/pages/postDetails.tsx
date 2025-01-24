@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/navbar";
 import { SidebarComponent } from "@/components/sidebar";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom"; // Assuming React Router for dynamic routing
+import { useParams } from "react-router-dom"; 
 
 const PostDetailsPage: React.FC = () => {
   const { postId } = useParams<{ postId: string }>(); // Extracting the post ID
@@ -10,32 +10,33 @@ const PostDetailsPage: React.FC = () => {
 
   return (
    
-    <div className="flex flex-col h-screen relative">
-    {/* Navbar at the top */}
-    {/* <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} /> */}
-
-    <div className="flex flex-1 mt-[60px] relative">
-        {/* Sidebar Section */}
-        <aside
-            className={`fixed top-14 inset-y-0 left-0 w-40 bg-white dark:bg-black border-r transition-transform duration-300 transform
-    ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-    lg:translate-x-0 z-40`}
-        >
-            /
-        </aside>
-
-        {/* Overlay for smaller screens */}
-        {isSidebarOpen && (
-            <div
-                className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-                onClick={() => setIsSidebarOpen(false)}
-            ></div>
-        )}
+   <div className="flex flex-col h-screen relative">
+              {/* Navbar at the top */}
+              <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+  
+              <div className="flex flex-1 mt-[60px] relative">
+                  {/* Sidebar Section */}
+                  <aside
+                      className={`fixed top-14 inset-y-0 left-0 w-64 bg-white dark:bg-black border-r transition-transform duration-300 transform
+              ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+              lg:translate-x-0 z-40`}
+                  >
+                      <SidebarComponent />
+                  </aside>
+  
+                  {/* Overlay for smaller screens */}
+                  {isSidebarOpen && (
+                      <div
+                          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+                          onClick={() => setIsSidebarOpen(false)}
+                      ></div>
+                  )}
 
         {/* Main Post Content Section */}
         <main
             className="flex-1 p-6 overflow-y-auto flex-col items-center justify-center transition-all duration-300 lg:ml-[250px]"
         >
+            
            <h1 className="text-2xl font-bold mb-4">Post Details</h1>
            <p className="text-gray-700">Detailed content for post ID: {postId}</p>
         </main>
