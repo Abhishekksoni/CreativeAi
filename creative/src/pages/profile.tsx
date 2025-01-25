@@ -8,10 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 const Profile: React.FC = () => {
   const { user, logout } = useContext(AuthContext);
 
-  if (!user) return console.log("no user here");
+  if (!user) return null;
 
   return (
-    <div className="container mx-auto p-6 mt-52 ml-52">
+    <div className="container mx-auto p-6 mt-52">
       <Card>
         <CardHeader>
           <CardTitle>User Profile</CardTitle>

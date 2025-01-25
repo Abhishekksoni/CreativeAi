@@ -13,32 +13,51 @@ import { UserService } from './service/userService';
 const app = express();
 
 // Middleware setup
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Configure CORS with allowed origins and credentials
 app.use(
   cors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    credentials: true,  // Allow cookies to be sent cross-origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Set-Cookie'],
+    optionsSuccessStatus: 200
   })
 );
 
-// Session configuration
+// Logging middleware to debug requests
+// app.use((req, res, next) => {
+//   console.log('Incoming request:', {
+//     method: req.method,
+//     path: req.path,
+//     headers: req.headers,
+//   });
+//   next();
+// });
+
+// Session configuration with enhanced settings
 app.use(
   session({
-    secret: config.sessionSecret,
+    secret: config.sessionSecret || '316dc25d33463ed6a1f8bf004a561b6633a7e11783d6508d2fc4fb31a2ae8d1e',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }, // Set to true in production with HTTPS
+    cookie: { 
+      secure: false,  // Should be false for local development
+      httpOnly: true,  
+      sameSite: 'lax',  // Try switching to lax instead of none
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+    proxy: true,  // Needed when behind reverse proxies like nginx
   })
 );
 
-// Passport setup
+// Passport authentication setup
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Google OAuth Strategy Configuration
 const userService = new UserService();
 
 passport.use(
@@ -50,22 +69,33 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        console.log('Google OAuth successful. Profile:', profile);
         const user = await userService.findOrCreateUser(profile);
         return done(null, user);
       } catch (error) {
+        console.error('Google OAuth error:', error);
         return done(error, false);
       }
     }
   )
 );
 
+// Serialize user ID into session
 passport.serializeUser((user: any, done) => {
+  console.log('Serializing User:', user);
   done(null, user.id);
 });
 
+// Deserialize user from session
 passport.deserializeUser(async (id: string, done) => {
+  console.log('Deserializing User ID:', id);
   try {
     const user = await AppDataSource.getRepository(User).findOne({ where: { id } });
+    if (!user) {
+      console.log('User not found during deserialization');
+      return done(null, false);
+    }
+    console.log('Deserialized User:', user);
     done(null, user);
   } catch (error) {
     done(error);
@@ -74,6 +104,11 @@ passport.deserializeUser(async (id: string, done) => {
 
 // Routes
 app.use('/auth', authRoutes);
+
+// Root route for debugging session persistence
+app.get('/', (req, res) => {
+  res.send(`User: ${JSON.stringify(req.user)}`);
+});
 
 // Start the server
 const PORT = process.env.PORT || 8000;
