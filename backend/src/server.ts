@@ -5,6 +5,7 @@ import cors from 'cors';
 import { AppDataSource, connectDB } from './config/database';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import authRoutes from './routes/authRoutes';
+import postRoutes from './routes/postRoutes';
 import { config } from './config/dotenvConfig';
 import './config/passport'; // Ensure passport is configured before routes
 import { User } from './models/User';
@@ -40,13 +41,13 @@ app.use(
 // Session configuration with enhanced settings
 app.use(
   session({
-    secret: config.sessionSecret || '316dc25d33463ed6a1f8bf004a561b6633a7e11783d6508d2fc4fb31a2ae8d1e',
+    secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: { 
       secure: false,  // Should be false for local development
       httpOnly: true,  
-      sameSite: 'lax',  // Try switching to lax instead of none
+      sameSite: 'lax', 
       maxAge: 1000 * 60 * 60 * 24,
     },
     proxy: true,  // Needed when behind reverse proxies like nginx
@@ -104,6 +105,7 @@ passport.deserializeUser(async (id: string, done) => {
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/post', postRoutes)
 
 // Root route for debugging session persistence
 app.get('/', (req, res) => {

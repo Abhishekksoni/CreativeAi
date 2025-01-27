@@ -5,7 +5,8 @@ import axios from 'axios';
 // Define User type
 interface User {
   id: string;
-  displayName: string;
+  userName: string;
+  profilePicture: string;
   email: string;
 }
 
@@ -26,7 +27,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 // API base URL
-const API_BASE_URL = 'http://localhost:8000/auth';
+// const API_BASE_URL = 'http://localhost:8000/auth';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -44,7 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       console.log('Profile response:', response.data);
       setUser(response.data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleAuthError(error);
       setUser(null);
     } finally {
@@ -73,7 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Generic error handler function
-  const handleAuthError = (error: any) => {
+  const handleAuthError = (error: unknown) => {
     if (axios.isAxiosError(error)) {
       console.error('Auth Error:', {
         message: error.message,

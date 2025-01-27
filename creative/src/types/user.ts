@@ -1,7 +1,7 @@
 // src/types/User.ts
 export interface User {
     id: string;
-    displayName: string;
+    userName: string;
     email: string;
     profilePicture?: string;
     role: string;

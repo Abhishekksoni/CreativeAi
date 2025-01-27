@@ -81,7 +81,7 @@ interface NavbarProps {
 }
 
 
-export function Navbar({ isSidebarOpen, setIsSidebarOpen }: NavbarProps) {
+export function Navbar({  setIsSidebarOpen }: NavbarProps) {
   return (
     <div className="flex items-center justify-between px-6 py-3 border-b bg-white dark:bg-black border-gray-100 dark:border-gray-800 fixed top-0 w-full z-50 ">
            

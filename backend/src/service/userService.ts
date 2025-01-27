@@ -17,7 +17,7 @@ export class UserService {
 
     const newUser = this.userRepository.create({
       googleId: profile.id,
-      displayName: profile.displayName,
+      userName: profile.displayName,
       email: profile.emails[0].value,
       profilePicture: profile.photos[0].value
     });

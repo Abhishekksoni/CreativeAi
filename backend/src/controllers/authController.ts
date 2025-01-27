@@ -11,7 +11,7 @@ export const loginSuccess = (req: Request, res: Response): void => {
 
   res.status(200).json({
     id: user.id,
-    displayName: user.displayName || 'Unknown',
+    userName: user.userName || 'Unknown',
     email: user.email || 'No email provided',
     avatar: user.profilePicture || '/default-avatar.png',
     role: user.role || 'Customer',

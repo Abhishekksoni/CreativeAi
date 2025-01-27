@@ -16,15 +16,15 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       {/* Author and Date */}
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          {post.authorImage && (
+          {post.author.profilePicture && (
             <img
-              src={post.authorImage}
-              alt={post.author}
+              src={post.author.profilePicture}
+              alt={post.author.userName}
               className="w-6 h-6 rounded-full object-cover"
             />
           )}
            <Link to="/dashboard" className="hover:underline">
-          <span className="text-sm">{post.author}</span>
+          <span className="text-sm">{post.author.userName}</span>
           </Link>
         </div>
         <span className="text-xs text-gray-400">{post.createdAt}</span>
@@ -42,10 +42,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
       {/* Post Image */}
       <Link to={`/post/${post.id}`} className="hover:underline">
-      {post.image && (
+      {post.imageUrl && (
         <div className="mt-3">
           <img
-            src={post.image}
+            src={post.imageUrl}
             alt={post.title}
             className="w-full h-auto rounded-lg object-cover"
           />

@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn, 
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm';
+import { Post } from "./Post";
 
 @Entity('users')
 export class User {
@@ -16,13 +18,16 @@ export class User {
   googleId?: string;
 
   @Column()
-  displayName!: string;
+  userName!: string;
 
   @Column({ unique: true })
   email!: string;
 
   @Column({ nullable: true })
   profilePicture?: string;
+
+  @OneToMany(() => Post, (post) => post.author)
+  posts!: Post[];
 
   @Column({ default: true })
   isActive: boolean = true;

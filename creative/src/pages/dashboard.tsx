@@ -32,7 +32,7 @@ const DashboardLayout = () => {
 
                 {/* Main Post Content Section */}
                 <main
-                    className="flex-1 p-6 overflow-y-auto flex items-center justify-center transition-all duration-300 lg:ml-[250px]"
+                    className="flex-1 p-6 overflow-y-auto transition-all duration-300 lg:ml-[250px]"
                 >
                     <MainContentPage />
                     <Outlet />
