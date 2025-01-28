@@ -2,13 +2,16 @@ import { Post } from "@/types/post";
 import React from "react";
 import { Link } from "react-router-dom"; // Assuming React Router for navigation
 import { Icons } from "./icons";
-
+import { formatDistanceToNow } from "date-fns";
+import { User } from "@/types/user";
 
 interface PostCardProps {
   post: Post;
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
+  const timeAgo = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
+  
   return (
     // <Link to={`/post/${post.id}`} >
     <div className="border rounded-lg p-4 transition duration-300">
@@ -23,11 +26,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               className="w-6 h-6 rounded-full object-cover"
             />
           )}
-           <Link to="/dashboard" className="hover:underline">
+           <Link to={`/profile/${post.author.id}`} className="hover:underline">
           <span className="text-sm">{post.author.userName}</span>
           </Link>
         </div>
-        <span className="text-xs text-gray-400">{post.createdAt}</span>
+        <span className="text-xs text-gray-400">{timeAgo}</span>
       </div>
 
       {/* Post Title */}

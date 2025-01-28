@@ -14,7 +14,7 @@ import {
 import { Icons } from './icons';
 
 const projects = [
-  { name: 'Dashboard', path: '/dashboard', icon: Icons?.home },
+  { name: 'Dashboard', path: '/', icon: Icons?.home },
   { name: 'Analytics', path: '/analytics', icon: Icons?.home },
   { name: 'Settings', path: '/settings', icon: Icons?.home },
 ];

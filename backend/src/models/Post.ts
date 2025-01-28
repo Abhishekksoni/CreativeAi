@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './User'; // Assuming you have a User entity
+import { Comment } from './Comment';
 
 @Entity('posts')
 export class Post {
@@ -18,14 +19,17 @@ export class Post {
   @Column({ type: 'int', default: 0 })
   likes?: number;
 
-  @Column({ type: 'int', default: 0 })
-  comments?: number;
+  @OneToMany(() => Comment, (comment) => comment.post, { cascade: true })
+  comments?: Comment[];
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   tags?: string;
 
   @ManyToOne(() => User, user => user.posts)
   author!: User;
+
+  @Column()
+  authorId!: string;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt!: Date;

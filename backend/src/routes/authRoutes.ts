@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 import { loginSuccess, logout } from '../controllers/authController';
 import { isAuthenticated } from '../middlewares/authMiddleware';
+import { getProfile } from '../controllers/profileController';
 
 const router = express.Router();
 
@@ -27,15 +28,25 @@ router.get('/google/callback', (req: Request, res: Response, next: NextFunction)
         console.error('Login Error:', loginErr);
         return res.redirect(`${process.env.FRONTEND_URL}/login?error=login_failed`);
       }
-      return res.redirect(`${process.env.FRONTEND_URL}/profile`);
+      return res.redirect(`${process.env.FRONTEND_URL}/`);
     });
   })(req, res, next);
 });
 
 // User Profile
 router.get('/profile', isAuthenticated, loginSuccess);
+router.get('/profile/:id', isAuthenticated, getProfile);
 
 // User Logout
 router.get('/logout', logout);
+
+router.get("/session", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({ isAuthenticated: true, user: req.user });
+  } else {
+    res.json({ isAuthenticated: false });
+  }
+});
+
 
 export default router;

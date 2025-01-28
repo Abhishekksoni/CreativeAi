@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import {
@@ -12,6 +12,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { ModeToggle } from "./ui/toggle";
+import { Button } from "./ui/button";
 
 const ThemeToggle = () => {
   const [theme, setTheme] = React.useState(() => {
@@ -75,6 +76,7 @@ const components: { title: string; href: string; description: string }[] = [
   },
 ];
 
+
 interface NavbarProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -82,78 +84,93 @@ interface NavbarProps {
 
 
 export function Navbar({  setIsSidebarOpen }: NavbarProps) {
+  
+  const navigate = useNavigate();
+
+  
+
+  const handleLoginClick = () => {
+    navigate("/login"); // Navigate to /login page
+  };
+
+
   return (
-    <div className="flex items-center justify-between px-6 py-3 border-b bg-white dark:bg-black border-gray-100 dark:border-gray-800 fixed top-0 w-full z-50 ">
-           
-    <Link to="/" className="flex items-center space-x-2">
-      {/* Hamburger menu  */}
-      <Icons.ham 
-  className="h-8 w-8 block lg:hidden cursor-pointer" 
-  onClick={() => setIsSidebarOpen((prev) => !prev)} 
-/>
-      <span className="text-xl font-bold">creativeAi</span>
-    </Link>
-    <NavigationMenu className="hidden md:flex">
-      <NavigationMenuList >
-        
-        <NavigationMenuItem  >
-          <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <li className="row-span-3">
-                <NavigationMenuLink asChild>
-                  <a
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                    href="/"
-                  >
-                    <Icons.logo className="h-6 w-6" />
-                    <div className="mb-2 mt-4 text-lg font-medium">shadcn/ui</div>
-                    <p className="text-sm leading-tight text-muted-foreground">
-                      Beautifully designed components built with Radix UI and Tailwind CSS.
-                    </p>
-                  </a>
-                </NavigationMenuLink>
-              </li>
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
-              </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
-              </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
-              </ListItem>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+<div className="flex items-center justify-between px-6 py-3 border-b bg-white dark:bg-black border-gray-100 dark:border-gray-800 fixed top-0 w-full z-50">
+  <Link to="/" className="flex items-center space-x-2">
+    <Icons.ham 
+      className="h-8 w-8 block lg:hidden cursor-pointer" 
+      onClick={() => setIsSidebarOpen((prev) => !prev)} 
+    />
+    <span className="text-xl font-bold">creativeAi</span>
+  </Link>
 
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-          <NavigationMenuContent>
+  <NavigationMenu className="hidden md:flex">
+    <NavigationMenuList>
+      <NavigationMenuItem>
+        <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
+        <NavigationMenuContent>
+          <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+            <li className="row-span-3">
+              <NavigationMenuLink asChild>
+                <a
+                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                  href="/"
+                >
+                  <Icons.logo className="h-6 w-6" />
+                  <div className="mb-2 mt-4 text-lg font-medium">shadcn/ui</div>
+                  <p className="text-sm leading-tight text-muted-foreground">
+                    Beautifully designed components built with Radix UI and Tailwind CSS.
+                  </p>
+                </a>
+              </NavigationMenuLink>
+            </li>
+            <ListItem href="/docs" title="Introduction">
+              Re-usable components built using Radix UI and Tailwind CSS.
+            </ListItem>
+            <ListItem href="/docs/installation" title="Installation">
+              How to install dependencies and structure your app.
+            </ListItem>
+            <ListItem href="/docs/primitives/typography" title="Typography">
+              Styles for headings, paragraphs, lists...etc
+            </ListItem>
+          </ul>
+        </NavigationMenuContent>
+      </NavigationMenuItem>
+
+      <NavigationMenuItem>
+        <NavigationMenuTrigger>Components</NavigationMenuTrigger>
+        <NavigationMenuContent>
           <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {components.map((component) => (
-                <ListItem key={component.title} title={component.title} href={component.href}>
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+            {components.map((component) => (
+              <ListItem key={component.title} title={component.title} href={component.href}>
+                {component.description}
+              </ListItem>
+            ))}
+          </ul>
+        </NavigationMenuContent>
+      </NavigationMenuItem>
 
-        <NavigationMenuItem>
-          <Link to="/docs">
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Documentation
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-      
-      </NavigationMenuList>
-    </NavigationMenu>
-    <NavigationMenuItem>
-      <ModeToggle />
-    </NavigationMenuItem>
-    </div>
+      <NavigationMenuItem>
+        <Link to="/docs">
+          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            Documentation
+          </NavigationMenuLink>
+        </Link>
+      </NavigationMenuItem>
+    </NavigationMenuList>
+  </NavigationMenu>
+
+  <div className="flex items-center space-x-4">
+    <ModeToggle />
+    <Button 
+      onClick={handleLoginClick} 
+      className=" px-4 py-2"
+    >
+      Log in
+    </Button>
+  </div>
+</div>
+
   );
 }
 

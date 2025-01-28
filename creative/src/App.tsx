@@ -23,6 +23,7 @@ function App() {
             <Route element={<ProtectedRoute />}> {/* Protect Profile route */}
               <Route path="/profile" element={<Profile />} />
             </Route>
+            <Route path="/profile/:userId" element={<Profile />} />
             <Route path="/post/:postId" element={<PostDetailsPage />} />
             <Route path="/about" element={<h1>About Page</h1>} />
             <Route path="/contact" element={<h1>Contact Page</h1>} />

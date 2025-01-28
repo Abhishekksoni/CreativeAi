@@ -22,6 +22,9 @@ export class PostService {
   static async getPostById(id: string) {
     return await AppDataSource.getRepository(Post).findOne({ where: { id }, relations: ["author"] });
   }
+  static async getPostByUserId(userId: string) {
+    return await AppDataSource.getRepository(Post).findOne({ where: { authorId: userId } });
+  }
 
   static async updatePost(id: string, postData: Partial<Post>, userId: string) {
     const postRepository = AppDataSource.getRepository(Post);

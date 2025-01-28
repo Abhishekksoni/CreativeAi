@@ -6,6 +6,7 @@ import { AppDataSource, connectDB } from './config/database';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import authRoutes from './routes/authRoutes';
 import postRoutes from './routes/postRoutes';
+import commentRoutes from './routes/commentRoutes';
 import { config } from './config/dotenvConfig';
 import './config/passport'; // Ensure passport is configured before routes
 import { User } from './models/User';
@@ -105,12 +106,14 @@ passport.deserializeUser(async (id: string, done) => {
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/post', postRoutes)
+app.use('/post', postRoutes);
+app.use('/comment', commentRoutes)
 
 // Root route for debugging session persistence
-app.get('/', (req, res) => {
-  res.send(`User: ${JSON.stringify(req.user)}`);
-});
+// app.get('/', (req, res) => {
+//   res.send(`User: ${JSON.stringify(req.user)}`);
+// });
+
 
 // Start the server
 const PORT = process.env.PORT || 8000;

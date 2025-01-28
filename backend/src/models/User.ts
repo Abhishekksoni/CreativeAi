@@ -8,6 +8,7 @@ import {
   OneToMany
 } from 'typeorm';
 import { Post } from "./Post";
+import { Comment } from "./Comment";
 
 @Entity('users')
 export class User {
@@ -28,6 +29,9 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.author)
   posts!: Post[];
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments?: Comment[];
 
   @Column({ default: true })
   isActive: boolean = true;

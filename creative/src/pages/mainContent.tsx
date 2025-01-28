@@ -1,54 +1,139 @@
+import { AuthContext } from "@/components/authContext";
 import PostCard from "@/components/postCard";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Post } from "@/types/post";
-import React, { useState, useEffect } from "react";
-import axios from "axios"; // Import axios
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MainContentPage: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]); // To hold the posts
-  const [loading, setLoading] = useState<boolean>(true); // Loading state to track data fetch
-  const [error, setError] = useState<string>(""); // Error state to handle errors during fetch
+    const { user } = useContext(AuthContext);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // Fetch posts from your API
+  const [postTitle, setPostTitle] = useState<string>("");
+  const [postContent, setPostContent] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Fetch posts from the API
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/post"); // Replace with your actual API endpoint
-        setPosts(response.data); // Update the posts state with the fetched data
+        const response = await axios.get("http://localhost:8000/post");
+        setPosts(response.data);
+        console.log(response.data);
       } catch (error: unknown) {
-        setError("Failed to fetch posts"); // Handle any errors
+        setError("Failed to fetch posts");
         console.error(error);
       } finally {
-        setLoading(false); // Set loading to false once data is fetched or an error occurs
+        setLoading(false);
       }
     };
 
     fetchPosts();
-  }, []); // Empty array to run only once when the component is mounted
+  }, []);
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading message or spinner while data is being fetched
-  }
+  // if (!user) return null;
 
-  if (error) {
-    return <div>{error}</div>; // Show error message if there's an issue with the API request
-  }
+  // Function to handle post creation
+  const handleCreatePost = async () => {
+    if (!postTitle || !postContent) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await axios.post("http://localhost:8000/post", {
+        title: postTitle,
+        content: postContent,
+        authorId: user.id, 
+      },
+      {
+        withCredentials: true // Add this
+      });
+
+      // Refresh the post list after submission
+      const response = await axios.get("http://localhost:8000/post");
+      setPosts(response.data);
+
+      setPostTitle("");
+      setPostContent("");
+      setIsModalOpen(false);
+
+      toast.success("Post created successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    } catch (error) {
+      console.error("Failed to create post", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
-    <div className="max-w-4xl mx-auto py-0">
-      <h1 className="text-2xl font-bold mb-4">Trending Posts</h1>
+    <div className="max-w-4xl mx-auto py-4">
+       <ToastContainer />
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Trending Posts</h1>
+        <Button onClick={() => setIsModalOpen(true)}>Create Post</Button>
+      </div>
+
       <div className="space-y-6">
         {posts.length > 0 ? (
-          posts.map((post) => (
-            <PostCard key={post.id} post={post} /> // Render each post as a PostCard
-          ))
+          posts.map((post) => <PostCard key={post.id} profile={post.author.id}  post={post} />)
         ) : (
-          <div>No posts available</div> // Message if no posts are found
+          <div>No posts available</div>
         )}
       </div>
+
+      {/* Create Post Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle>Create a Post</DialogTitle>
+            
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <Input
+              placeholder="Post Title"
+              value={postTitle}
+              onChange={(e) => setPostTitle(e.target.value)}
+            />
+            <Textarea
+              placeholder="Write your content here..."
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+            />
+            <Button 
+              onClick={handleCreatePost} 
+              disabled={isSubmitting}
+              className="w-full"
+            >
+              {isSubmitting ? "Creating..." : "Create Post"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
 export default MainContentPage;
-
-

@@ -48,6 +48,20 @@ export class PostController {
     }
   }
 
+  static async getPostByUserId(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.params.userId;
+      const post = await PostService.getPostByUserId(userId);
+      if (!post) {
+        res.status(404).json({ message: "Post not found" });
+        return;
+      }
+      res.status(200).json(post);
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  }
+
   static async updatePost(req: Request, res: Response): Promise<void> {
     try {
       if (!req.user || !req.user.id) {

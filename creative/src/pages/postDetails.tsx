@@ -1,12 +1,95 @@
+import { CommentSection } from "@/components/comments";
 import { Navbar } from "@/components/navbar";
 import { SidebarComponent } from "@/components/sidebar";
-import React, { useState } from "react";
-import { useParams } from "react-router-dom"; 
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom"; 
 
+
+
+// const PostDetailsPage: React.FC = () => {
+//   const { postId } = useParams<{ postId: string }>(); // Extracting the post ID
+//   // Fetch detailed post data based on `postId` here
+//   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+//   const [post, setPost] = useState<any>(null); 
+
+//   useEffect(() => {
+//     // Fetch post details from the server
+//     axios.get(`http://localhost:8000/post/${postId}`).then((response) => {
+//       setPost(response.data);
+//     });
+//   }, [postId]);
+
+//   if (!post) {
+//     return <div>Loading...</div>; // Show a loading state while the post is being fetched
+//   }
 const PostDetailsPage: React.FC = () => {
-  const { postId } = useParams<{ postId: string }>(); // Extracting the post ID
-  // Fetch detailed post data based on `postId` here
+  const { postId } = useParams<{ postId: string }>();
+  const [post, setPost] = useState<any>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [comments, setComments] = useState<any[]>([]);
+  const [newComment, setNewComment] = useState("");
+
+  useEffect(() => {
+    axios.get(`http://localhost:8000/post/${postId}`).then((response) => {
+      setPost(response.data);
+    });
+
+    axios.get(`http://localhost:8000/comment/${postId}`).then((response) => {
+      setComments(response.data);
+    });
+  }, [postId]);
+
+  if (!post) {
+        return <div>Loading...</div>; // Show a loading state while the post is being fetched
+      }
+
+      if (!postId) {
+        return <div>Invalid post ID</div>;
+      }    
+
+  // const handleAddComment = async () => {
+  //   try {
+  //     await axios.post(`http://localhost:8000/comment/`, { 
+  //     postId, content: newComment
+  //    },
+  //    {
+  //     withCredentials: true // Add this
+  //   }
+  //   );
+  //     setNewComment("");
+  //     const updatedComments = await axios.get(`http://localhost:8000/comment/${postId}`);
+  //     setComments(updatedComments.data);
+  //   } catch (error) {
+  //     console.error("Error adding comment", error);
+  //   }
+  // };
+
+  const handleAddComment = async (content: string, parentId?: string) => {
+    try {
+      await axios.post(
+        `http://localhost:8000/comment/`, 
+        { 
+          postId,
+          content,
+          parentId // Add this to support nested comments
+        },
+        {
+          withCredentials: true
+        }
+      );
+      
+      // Fetch updated comments
+      const updatedComments = await axios.get(`http://localhost:8000/comment/${postId}`);
+      setComments(updatedComments.data);
+    } catch (error) {
+      console.error("Error adding comment", error);
+    }
+  };
+
+  
 
   return (
    
@@ -36,16 +119,65 @@ const PostDetailsPage: React.FC = () => {
         <main
             className="flex-1 p-6 overflow-y-auto flex-col items-center justify-center transition-all duration-300 lg:ml-[250px]"
         >
-            
-           <h1 className="text-2xl font-bold mb-4">Post Details</h1>
-           <p className="text-gray-700">Detailed content for post ID: {postId}</p>
+          <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    {post.author.profilePicture && (
+                      <img
+                        src={post.author.profilePicture}
+                        alt={post.author.userName}
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                    )}
+                    <span className="text-sm">{post.author.userName}</span>
+                  </div>
+                  {/* <span className="text-xs text-gray-400">{timeAgo}</span> */}
+                </div>
+          
+                {/* Post Title */}
+                <h2 className="text-lg font-semibold mt-2">
+                    {post.title}
+                </h2>
+          
+                {/* Post Content */}
+                <p className="text-sm mt-2 line-clamp-2">{post.content}</p>
+          
+                {/* Post Image */}
+                {post.imageUrl && (
+                  <div className="mt-3">
+                    <img
+                      src={post.imageUrl}
+                      alt={post.title}
+                      className="w-full h-auto rounded-lg object-cover"
+                    />
+                  </div>
+
+                )}
+                 {/* Comment Section */}
+                 <CommentSection
+          postId={postId}
+          comments={comments}
+          onAddComment={handleAddComment}
+        />
         </main>
+       
 
         {/* Ads Section (Visible only on md+ screens) */}
-        <aside className="w-1/6 min-w-[250px] border-l hidden lg:block border-gray-200 dark:border-gray-700 z-0">
-            <div className="p-4">
-                <h2 className="text-xl font-semibold">Sponsored Ads</h2>
-                <p className="text-gray-500">Advertise your content here.</p>
+        <aside className="w-1/6 min-w-[400px] border-l hidden lg:block border-gray-200 dark:border-gray-700 z-0">
+            <div className="p-5 ml-6 mt-3 border rounded-lg max-w-[350px]">
+                <h2 className="text-xl font-semibold">
+                <div className="flex space-x-2">
+                    {post.author.profilePicture && (
+                      <img
+                        src={post.author.profilePicture}
+                        alt={post.author.userName}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    )}
+                    <span className="text-md">{post.author.userName}</span>
+                  </div>
+                </h2>
+                {/* <p className="text-gray-500">Advertise your content here.</p> */}
+                <Button className="items-center mt-4 min-w-[300px]">Follow</Button>
             </div>
         </aside>
     </div>
