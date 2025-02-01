@@ -18,14 +18,32 @@ export class User {
   @Column({ unique: true, nullable: true })
   googleId?: string;
 
+  @Column({ unique: true, nullable: true})
+  userName?: string;
+
   @Column()
-  userName!: string;
+  name?: string;
 
   @Column({ unique: true })
   email!: string;
 
   @Column({ nullable: true })
   profilePicture?: string;
+
+  @Column({ nullable: true })
+  bio?: string;
+
+  @Column({ nullable: true })
+  education?: string;
+
+  @Column({ nullable: true })
+  work?: string;
+
+  // @Column({ default: false, nullable: true })
+  // subscribeToNewsletter?: boolean;
+
+  @Column({ default: false, nullable: true })
+  isProfileSetup?: boolean;
 
   @OneToMany(() => Post, (post) => post.author)
   posts!: Post[];

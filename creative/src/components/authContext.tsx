@@ -1,11 +1,12 @@
 // src/components/authContext.tsx
-import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useCallback, useContext } from 'react';
 import axios from 'axios';
 
 // Define User type
 interface User {
   id: string;
   userName: string;
+  // name: string;
   profilePicture: string;
   email: string;
 }
@@ -45,6 +46,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       console.log('Profile response:', response.data);
       setUser(response.data);
+      console.log('Updated user state:', user);
+
     } catch (error: unknown) {
       handleAuthError(error);
       setUser(null);
@@ -96,4 +99,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };

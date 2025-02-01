@@ -13,7 +13,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
   
   return (
-    // <Link to={`/post/${post.id}`} >
     <div className="border rounded-lg p-4 transition duration-300">
           <Link to={`/post/${post.id}`} >
       {/* Author and Date */}

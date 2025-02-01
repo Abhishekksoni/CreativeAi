@@ -13,17 +13,23 @@ import {
 } from "@/components/ui/navigation-menu";
 import { ModeToggle } from "./ui/toggle";
 import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "./authContext";
+// import { useAuth } from "@/components/authContext"; // Adjust the import based on your auth context
 
 const ThemeToggle = () => {
   const [theme, setTheme] = React.useState(() => {
-    // Get theme from localStorage or default to "light"
     return localStorage.getItem("theme") || "light";
   });
 
   React.useEffect(() => {
-    // Apply the theme class to the document element
     document.documentElement.classList.toggle("dark", theme === "dark");
-    // Store the current theme in localStorage
     localStorage.setItem("theme", theme);
   }, [theme]);
 
@@ -42,7 +48,6 @@ const ThemeToggle = () => {
   );
 };
 
-// Define the components array with types
 const components: { title: string; href: string; description: string }[] = [
   {
     title: "Alert Dialog",
@@ -76,101 +81,120 @@ const components: { title: string; href: string; description: string }[] = [
   },
 ];
 
-
 interface NavbarProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-
-export function Navbar({  setIsSidebarOpen }: NavbarProps) {
-  
+export function Navbar({ setIsSidebarOpen }: NavbarProps) {
   const navigate = useNavigate();
-
-  
+  const { user, logout } = useAuth(); // Use your auth context to get the user and logout function
 
   const handleLoginClick = () => {
     navigate("/login"); // Navigate to /login page
   };
 
+  const handleLogoutClick = () => {
+    logout(); // Call the logout function from your auth context
+    navigate("/"); // Redirect to the home page after logout
+  };
 
   return (
-<div className="flex items-center justify-between px-6 py-3 border-b bg-white dark:bg-black border-gray-100 dark:border-gray-800 fixed top-0 w-full z-50">
-  <Link to="/" className="flex items-center space-x-2">
-    <Icons.ham 
-      className="h-8 w-8 block lg:hidden cursor-pointer" 
-      onClick={() => setIsSidebarOpen((prev) => !prev)} 
-    />
-    <span className="text-xl font-bold">creativeAi</span>
-  </Link>
+    <div className="flex items-center justify-between px-6 py-3 border-b bg-white dark:bg-black border-gray-100 dark:border-gray-800 fixed top-0 w-full z-50">
+      <Link to="/" className="flex items-center space-x-2">
+        <Icons.ham
+          className="h-8 w-8 block lg:hidden cursor-pointer"
+          onClick={() => setIsSidebarOpen((prev) => !prev)}
+        />
+        <span className="text-xl font-bold">creativeAi</span>
+      </Link>
 
-  <NavigationMenu className="hidden md:flex">
-    <NavigationMenuList>
-      <NavigationMenuItem>
-        <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-            <li className="row-span-3">
-              <NavigationMenuLink asChild>
-                <a
-                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                  href="/"
-                >
-                  <Icons.logo className="h-6 w-6" />
-                  <div className="mb-2 mt-4 text-lg font-medium">shadcn/ui</div>
-                  <p className="text-sm leading-tight text-muted-foreground">
-                    Beautifully designed components built with Radix UI and Tailwind CSS.
-                  </p>
-                </a>
+      <NavigationMenu className="hidden md:flex">
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                <li className="row-span-3">
+                  <NavigationMenuLink asChild>
+                    <a
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                      href="/"
+                    >
+                      <Icons.logo className="h-6 w-6" />
+                      <div className="mb-2 mt-4 text-lg font-medium">shadcn/ui</div>
+                      <p className="text-sm leading-tight text-muted-foreground">
+                        Beautifully designed components built with Radix UI and Tailwind CSS.
+                      </p>
+                    </a>
+                  </NavigationMenuLink>
+                </li>
+                <ListItem href="/docs" title="Introduction">
+                  Re-usable components built using Radix UI and Tailwind CSS.
+                </ListItem>
+                <ListItem href="/docs/installation" title="Installation">
+                  How to install dependencies and structure your app.
+                </ListItem>
+                <ListItem href="/docs/primitives/typography" title="Typography">
+                  Styles for headings, paragraphs, lists...etc
+                </ListItem>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Components</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                {components.map((component) => (
+                  <ListItem key={component.title} title={component.title} href={component.href}>
+                    {component.description}
+                  </ListItem>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <Link to="/docs">
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Documentation
               </NavigationMenuLink>
-            </li>
-            <ListItem href="/docs" title="Introduction">
-              Re-usable components built using Radix UI and Tailwind CSS.
-            </ListItem>
-            <ListItem href="/docs/installation" title="Installation">
-              How to install dependencies and structure your app.
-            </ListItem>
-            <ListItem href="/docs/primitives/typography" title="Typography">
-              Styles for headings, paragraphs, lists...etc
-            </ListItem>
-          </ul>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
+            </Link>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
 
-      <NavigationMenuItem>
-        <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-            {components.map((component) => (
-              <ListItem key={component.title} title={component.title} href={component.href}>
-                {component.description}
-              </ListItem>
-            ))}
-          </ul>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-
-      <NavigationMenuItem>
-        <Link to="/docs">
-          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-            Documentation
-          </NavigationMenuLink>
-        </Link>
-      </NavigationMenuItem>
-    </NavigationMenuList>
-  </NavigationMenu>
-
-  <div className="flex items-center space-x-4">
-    <ModeToggle />
-    <Button 
-      onClick={handleLoginClick} 
-      className=" px-4 py-2"
-    >
-      Log in
-    </Button>
-  </div>
-</div>
-
+      <div className="flex items-center space-x-4">
+        <ModeToggle />
+        {user ? (
+          // Show profile dropdown if user is logged in
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="rounded-full focus:outline-none">
+                <Avatar>
+                  <AvatarImage src={user.avatarUrl} alt={user.name} />
+                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48">
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogoutClick}>
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          // Show login button if user is not logged in
+          <Button onClick={handleLoginClick} className="px-4 py-2">
+            Log in
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -204,4 +228,3 @@ const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
 );
 
 ListItem.displayName = "ListItem";
-

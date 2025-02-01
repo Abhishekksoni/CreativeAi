@@ -9,6 +9,7 @@ interface CommentProps {
   content: string;
   author: {
     userName: string;
+    name: string;
     profilePicture?: string;
   };
   replies: CommentType[];

@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 import { loginSuccess, logout } from '../controllers/authController';
 import { isAuthenticated } from '../middlewares/authMiddleware';
-import { getProfile } from '../controllers/profileController';
+import { buildProfile,  checkUsernameAvailability,  getProfile } from '../controllers/profileController';
 
 const router = express.Router();
 
@@ -28,7 +28,9 @@ router.get('/google/callback', (req: Request, res: Response, next: NextFunction)
         console.error('Login Error:', loginErr);
         return res.redirect(`${process.env.FRONTEND_URL}/login?error=login_failed`);
       }
-      return res.redirect(`${process.env.FRONTEND_URL}/`);
+      // return res.redirect(`${process.env.FRONTEND_URL}/`);
+      const redirectPath = user.isProfileSetup ? '/' : '/profile-builder';
+      return res.redirect(`${process.env.FRONTEND_URL}${redirectPath}`);
     });
   })(req, res, next);
 });
@@ -36,7 +38,8 @@ router.get('/google/callback', (req: Request, res: Response, next: NextFunction)
 // User Profile
 router.get('/profile', isAuthenticated, loginSuccess);
 router.get('/profile/:id', isAuthenticated, getProfile);
-
+router.post('/profile/:id', buildProfile);
+router.get('/check-username/:userId/:username', checkUsernameAvailability);
 // User Logout
 router.get('/logout', logout);
 

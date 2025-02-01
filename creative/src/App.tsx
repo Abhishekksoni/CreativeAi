@@ -9,6 +9,7 @@ import { AuthProvider } from "./components/authContext";
 import Login from "./pages/login";
 import Profile from "./pages/profile";
 import ProtectedRoute from "./components/protectedRoute";
+import ProfileBuilder from "./pages/buildProfile";
 
 function App() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,6 +25,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="/profile/:userId" element={<Profile />} />
+            <Route path="/profile-builder" element={<ProfileBuilder />} />
             <Route path="/post/:postId" element={<PostDetailsPage />} />
             <Route path="/about" element={<h1>About Page</h1>} />
             <Route path="/contact" element={<h1>Contact Page</h1>} />
