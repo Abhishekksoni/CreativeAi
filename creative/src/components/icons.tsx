@@ -1,5 +1,5 @@
-import { Bookmark, Heart, Share } from "lucide-react";
-import { FaComment, FaHome, FaMoon, FaSun, FaUser } from "react-icons/fa";
+import { Bookmark, CrossIcon, Heart, Share } from "lucide-react";
+import { FaCheck, FaComment, FaHome, FaMoon, FaSpinner, FaSun, FaUser } from "react-icons/fa";
 import { HiBars3 } from "react-icons/hi2";
 export const Icons = {
   home: FaHome,
@@ -11,5 +11,8 @@ export const Icons = {
   reaction: Heart,
   comment:FaComment,
   save:Bookmark,
-  share:Share
+  share:Share,
+  spinner:FaSpinner,
+  close: CrossIcon,
+  check:FaCheck
 };

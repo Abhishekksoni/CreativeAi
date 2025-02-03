@@ -1,21 +1,22 @@
 import { Icons } from './icons';
 import {
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarProvider
 } from './ui/sidebar';
 
 const projects = [
-  { name: 'Dashboard', path: '/', icon: Icons?.home },
-  { name: 'Analytics', path: '/analytics', icon: Icons?.home },
-  { name: 'Settings', path: '/settings', icon: Icons?.home },
+  { name: 'Profile', path: '/settings/profile', icon: Icons?.home },
+  { name: 'Customization', path: '/settings/customization', icon: Icons?.home },
+  { name: 'Notifications', path: '/settings/notifications', icon: Icons?.home },
+  { name: 'Account', path: '/settings/account', icon: Icons?.home },
 ];
 
-export const SidebarComponent = () => {
+export const SettingSidebarComponent = () => {
   return (
 
       <SidebarProvider>

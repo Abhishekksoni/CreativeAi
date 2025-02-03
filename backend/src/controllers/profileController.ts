@@ -53,20 +53,22 @@ export const buildProfile = async (req: Request, res: Response, next: NextFuncti
   };
 
 
-// export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const userId = (req.user as User).id; // Only allow updating the logged-in user's profile
-//     const { userName, bio, location, profilePicture } = req.body;
+export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    console.log("Params:", req.params);
+    const { id: userId } = req.params;// Only allow updating the logged-in user's profile
+    
+    const { userName, bio, profilePicture } = req.body;
+    
 
-//     const updatedProfile = await ProfileService.updateProfile(userId, {
-//       userName,
-//       bio,
-//       location,
-//       profilePicture,
-//     });
+    const updatedProfile = await ProfileService.updateProfile(userId, {
+      userName,
+      bio,
+      profilePicture,
+    });
 
-//     res.status(200).json(updatedProfile);
-//   } catch (err) {
-//     next(err);
-//   }
-// };
+    res.status(200).json(updatedProfile);
+  } catch (err) {
+    next(err);
+  }
+};

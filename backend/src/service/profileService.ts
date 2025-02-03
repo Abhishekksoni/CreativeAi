@@ -58,16 +58,25 @@ export class ProfileService {
   }
 
 
-//   static async updateProfile(userId: string, updateData: Partial<User>) {
-//     const user = await User.findByIdAndUpdate(userId, updateData, {
-//       new: true, // Return the updated document
-//       runValidators: true, // Validate the update data
-//     }).select('-password -__v');
+  static async updateProfile(userId: string, updateData: Partial<User>): Promise<User> {
+    if (!userId) {
+        throw new Error("User ID is required for updating the profile.");
+    }
 
-//     if (!user) {
-//       throw new NotFoundError('User not found');
-//     }
+    const userRepository = AppDataSource.getRepository(User);
+    
+    // Check if user exists
+    const user = await userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+        throw new Error("User not found.");
+    }
 
-//     return user;
-//   }
+    // Update user
+    await userRepository.update(userId, updateData);
+
+    // Fetch and return the updated user
+    const updatedUser = await userRepository.findOne({ where: { id: userId } });
+
+    return updatedUser!;
+}
 }

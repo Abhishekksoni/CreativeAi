@@ -6,7 +6,6 @@ import axios from 'axios';
 interface User {
   id: string;
   userName: string;
-  // name: string;
   profilePicture: string;
   email: string;
 }
@@ -17,6 +16,7 @@ interface AuthContextType {
   loading: boolean;
   login: () => void;
   logout: () => Promise<void>;
+  updateUser: (updatedFields: Partial<User>) => void; // ✅ Add updateUser function
 }
 
 // Create context with default values
@@ -24,30 +24,23 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   login: () => {},
-  logout: async () => {}
+  logout: async () => {},
+  updateUser: () => {}, // ✅ Provide a default empty function
 });
-
-// API base URL
-// const API_BASE_URL = 'http://localhost:8000/auth';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Function to fetch user profile
+  // Fetch user profile
   const fetchUserProfile = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get('http://localhost:8000/auth/profile', {
         withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-        }
+        headers: { 'Content-Type': 'application/json' },
       });
-      console.log('Profile response:', response.data);
       setUser(response.data);
-      console.log('Updated user state:', user);
-
     } catch (error: unknown) {
       handleAuthError(error);
       setUser(null);
@@ -76,6 +69,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // ✅ Function to update user state partially
+  const updateUser = (updatedFields: Partial<User>) => {
+    setUser((prevUser) => (prevUser ? { ...prevUser, ...updatedFields } : prevUser));
+  };
+
   // Generic error handler function
   const handleAuthError = (error: unknown) => {
     if (axios.isAxiosError(error)) {
@@ -89,18 +87,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Render loading state
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// Custom hook for consuming AuthContext
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

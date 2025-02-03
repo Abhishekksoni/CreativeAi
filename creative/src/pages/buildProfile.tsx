@@ -99,7 +99,7 @@ const ProfileBuilder: React.FC = () => {
   }, [profileData.userName, userId]);
 
   return (
-    <div className="max-w-md mx-auto p-4 mt-16">
+    <div className="max-w-xl mx-auto p-4 ">
       <Slider ref={sliderRef} {...settings}>
         {/* Step 1: Username and Bio */}
         <Card>

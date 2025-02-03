@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 import { loginSuccess, logout } from '../controllers/authController';
 import { isAuthenticated } from '../middlewares/authMiddleware';
-import { buildProfile,  checkUsernameAvailability,  getProfile } from '../controllers/profileController';
+import { buildProfile,  checkUsernameAvailability,  getProfile, updateProfile } from '../controllers/profileController';
 
 const router = express.Router();
 
@@ -38,7 +38,8 @@ router.get('/google/callback', (req: Request, res: Response, next: NextFunction)
 // User Profile
 router.get('/profile', isAuthenticated, loginSuccess);
 router.get('/profile/:id', isAuthenticated, getProfile);
-router.post('/profile/:id', buildProfile);
+router.post('/profile/:id',isAuthenticated, buildProfile);
+router.put('/profile/:id',isAuthenticated, updateProfile);
 router.get('/check-username/:userId/:username', checkUsernameAvailability);
 // User Logout
 router.get('/logout', logout);

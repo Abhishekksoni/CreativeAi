@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../components/authContext";
 import { Post } from "@/types/post";
 import PostCard from "@/components/postCard";
@@ -41,6 +41,10 @@ const Profile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const isCurrentUserProfile = !userId || userId === currentUser?.id;
+  const navigate = useNavigate();
+  const handleEditProfileClick = () => {
+    navigate('/settings/profile');
+  };
 
   useEffect(() => {
     const fetchProfileAndPosts = async () => {
@@ -106,7 +110,7 @@ if (!idToFetch) {
               <h2 className="text-3xl font-bold">{profileUser.name}</h2>
               <p className="text-muted-foreground">{profileUser.email}</p>
               {isCurrentUserProfile ? (
-                <Button onClick={() => alert("Edit Profile clicked")} className="min-w-[150px]">
+                <Button onClick={handleEditProfileClick} className="min-w-[150px]">
                   Edit Profile
                 </Button>
               ) : (
@@ -120,8 +124,8 @@ if (!idToFetch) {
         <CardContent>
   {/* Bio Section (Conditional) */}
   {profileUser.bio && (
-    <div className="space-y-2">
-      <Label>Bio</Label>
+    <div className="space-y-2 text-center">
+      {/* <Label>Bio</Label> */}
       <p className="text-muted-foreground">{profileUser.bio}</p>
     </div>
   )}
