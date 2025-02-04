@@ -18,7 +18,7 @@ const projects = [
 export const SidebarComponent = () => {
   return (
 
-      <SidebarProvider>
+      <SidebarProvider className='fixed top-[6rem] left-8 w-52'>
 
 
   <SidebarContent>
@@ -28,7 +28,7 @@ export const SidebarComponent = () => {
         <SidebarMenu>
           {projects.map((project) => (
             <SidebarMenuItem key={project.name}>
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton asChild className='p-5'>
                 <a href={project.path}>
                   <project.icon />
                   <span>{project.name}</span>

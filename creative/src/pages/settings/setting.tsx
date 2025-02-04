@@ -14,15 +14,15 @@ const Setting = () => {
             {/* Navbar at the top */}
             <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
-            <div className="flex flex-1 mt-[60px] relative">
+            <div className="flex flex-1 mt-[40px] relative">
                 {/* Sidebar Section */}
                 <aside
-                    className={`fixed top-14 inset-y-0 left-0 w-64 bg-white dark:bg-black border-r transition-transform duration-300 transform
-            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-            lg:translate-x-0 z-40`}
-                >
-                    <SettingSidebarComponent />
-                </aside>
+                                   className={`fixed top-0 inset-y-0 left-0 w-60 bg-white  dark:bg-black  transition-transform duration-300 transform
+                           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+                           lg:translate-x-0 z-40`}
+                               >
+                                   <SettingSidebarComponent />
+                               </aside>
 
                 {/* Overlay for smaller screens */}
                 {isSidebarOpen && (
@@ -34,7 +34,7 @@ const Setting = () => {
 
                 {/* Main Post Content Section */}
                 <main
-                    className="flex-1 p-6 overflow-y-auto transition-all duration-300 lg:ml-[250px]"
+                    className="flex-1 p-6 overflow-y-auto transition-all duration-300 lg:ml-[105px]"
                 >
                     <EditProfilePage />
                     <Outlet />

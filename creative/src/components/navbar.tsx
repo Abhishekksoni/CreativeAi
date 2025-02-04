@@ -182,6 +182,9 @@ export function Navbar({ setIsSidebarOpen }: NavbarProps) {
               <DropdownMenuItem onClick={() => navigate("/profile")}>
                 Profile
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                Settings
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogoutClick}>
                 Logout
               </DropdownMenuItem>

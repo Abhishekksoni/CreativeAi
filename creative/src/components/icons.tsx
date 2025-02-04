@@ -1,5 +1,7 @@
 import { Bookmark, CrossIcon, Heart, Share } from "lucide-react";
 import { FaCheck, FaComment, FaHome, FaMoon, FaSpinner, FaSun, FaUser } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
+import { CiFaceSmile } from "react-icons/ci";
 import { HiBars3 } from "react-icons/hi2";
 export const Icons = {
   home: FaHome,
@@ -9,10 +11,12 @@ export const Icons = {
   logo: FaUser,
   ham: HiBars3,
   reaction: Heart,
-  comment:FaComment,
-  save:Bookmark,
-  share:Share,
-  spinner:FaSpinner,
+  comment: FaComment,
+  save: Bookmark,
+  share: Share,
+  spinner: FaSpinner,
   close: CrossIcon,
-  check:FaCheck
+  check: FaCheck,
+  settings: IoMdSettings,
+  profile: CiFaceSmile
 };

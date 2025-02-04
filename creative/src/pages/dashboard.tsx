@@ -15,7 +15,7 @@ const DashboardLayout = () => {
             <div className="flex flex-1 mt-[60px] relative">
                 {/* Sidebar Section */}
                 <aside
-                    className={`fixed top-14 inset-y-0 left-0 w-64 bg-white dark:bg-black border-r transition-transform duration-300 transform
+                    className={`fixed top-0 inset-y-0 left-0 w-60 bg-white  dark:bg-black  transition-transform duration-300 transform
             ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
             lg:translate-x-0 z-40`}
                 >
@@ -39,7 +39,7 @@ const DashboardLayout = () => {
                 </main>
 
                 {/* Ads Section (Visible only on md+ screens) */}
-                <aside className="w-1/6 min-w-[250px] border-l hidden lg:block border-gray-200 dark:border-gray-700 z-0">
+                <aside className="w-1/6 min-w-[250px]  hidden lg:block z-0">
                     <div className="p-4">
                         <h2 className="text-xl font-semibold">Sponsored Ads</h2>
                         <p className="text-gray-500">Advertise your content here.</p>
