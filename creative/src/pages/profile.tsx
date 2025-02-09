@@ -1,4 +1,3 @@
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,21 +14,16 @@ interface ProfileUser {
   id: string;
   userName: string;
   name: string;
-  work:string,
-  education:string,
+  work: string;
+  education: string;
   email: string;
   profilePicture?: string;
   avatar?: string;
   bio?: string;
   role?: string;
+  followers?: string[]; // Array of follower IDs
+  following?: string[]; // Array of following IDs
 }
-
-// interface Post {
-//   id: string;
-//   title: string;
-//   content: string;
-//   createdAt: string;
-// }
 
 const Profile: React.FC = () => {
   const params = useParams();
@@ -39,34 +33,40 @@ const Profile: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false); // Track follow status
+  const navigate = useNavigate();
 
   const isCurrentUserProfile = !userId || userId === currentUser?.id;
-  const navigate = useNavigate();
-  const handleEditProfileClick = () => {
-    navigate('/settings/profile');
-  };
 
   useEffect(() => {
     const fetchProfileAndPosts = async () => {
       try {
         setLoading(true);
         const idToFetch = userId ?? currentUser?.id;
-if (!idToFetch) {
-  setError("User ID not found.");
-  return;
-}
-  
+        if (!idToFetch) {
+          setError("User ID not found.");
+          return;
+        }
+
         // Fetch profile data and posts in parallel
         const [profileResponse, postsResponse] = await Promise.all([
-          axios.get<ProfileUser>(`http://localhost:8000/auth/profile/${idToFetch}`, { withCredentials: true }),
-          axios.get<Post[]>(`http://localhost:8000/post/user/${idToFetch}`, { withCredentials: true }),
+          axios.get<ProfileUser>(`http://localhost:8000/auth/profile/${idToFetch}`, {
+            withCredentials: true,
+          }),
+          axios.get<Post[]>(`http://localhost:8000/post/user/${idToFetch}`, {
+            withCredentials: true,
+          }),
         ]);
-  
+
         setProfileUser(profileResponse.data);
-        console.log("asdfa", profileResponse.data);
-  
         setPosts(Array.isArray(postsResponse.data) ? postsResponse.data : [postsResponse.data]);
-        console.log("dattttaaa", postsResponse.data);
+
+        // Check if the current user is following the profile user
+        if (currentUser && profileResponse.data.followers?.includes(currentUser.id)) {
+          setIsFollowing(true);
+        } else {
+          setIsFollowing(false);
+        }
       } catch (err) {
         console.error("Error fetching profile or posts:", err);
         setError("Failed to load profile data. Please try again later.");
@@ -74,10 +74,50 @@ if (!idToFetch) {
         setLoading(false);
       }
     };
-  
+
     fetchProfileAndPosts();
   }, [userId, currentUser?.id]);
-  
+
+  const handleFollow = async () => {
+    if (!currentUser || !profileUser) return;
+
+    try {
+      if (isFollowing) {
+        // Unfollow the user
+        await axios.post(
+          `http://localhost:8000/connect/unfollow/${currentUser.id}/${profileUser.id}`,
+          {},
+          { withCredentials: true }
+        );
+        setIsFollowing(false);
+        // Update the profileUser's followers array locally
+        setProfileUser((prev) => ({
+          ...prev!,
+          followers: prev?.followers?.filter((id) => id !== currentUser.id),
+        }));
+      } else {
+        // Follow the user
+        await axios.post(
+          `http://localhost:8000/connect/follow/${currentUser.id}/${profileUser.id}`,
+          {},
+          { withCredentials: true }
+        );
+        setIsFollowing(true);
+        // Update the profileUser's followers array locally
+        setProfileUser((prev) => ({
+          ...prev!,
+          followers: [...(prev?.followers || []), currentUser.id],
+        }));
+      }
+    } catch (err) {
+      console.error("Error following/unfollowing user:", err);
+      setError("Failed to update follow status. Please try again later.");
+    }
+  };
+
+  const handleEditProfileClick = () => {
+    navigate("/settings/profile");
+  };
 
   if (loading) {
     return (
@@ -114,89 +154,84 @@ if (!idToFetch) {
                   Edit Profile
                 </Button>
               ) : (
-                <Button onClick={() => alert("Follow clicked")} className="min-w-[150px]">
-                  Follow
+                <Button onClick={handleFollow} className="min-w-[150px]">
+                  {isFollowing ? "Unfollow" : "Follow"}
                 </Button>
               )}
             </div>
           </div>
         </CardHeader>
         <CardContent>
-  {/* Bio Section (Conditional) */}
-  {profileUser.bio && (
-    <div className="space-y-2 text-center">
-      {/* <Label>Bio</Label> */}
-      <p className="text-muted-foreground">{profileUser.bio}</p>
-    </div>
-  )}
+          {/* Bio Section */}
+          {profileUser.bio && (
+            <div className="space-y-2 text-center">
+              <p className="text-muted-foreground">{profileUser.bio}</p>
+            </div>
+          )}
 
-  {/* Education, Work, and Other Sections (Conditional) */}
-  <div className="flex justify-between space-y-2 mt-8">
-    {/* Education Section */}
-    {profileUser.education && (
-      <div>
-        <Label>Education</Label>
-        <p className="text-muted-foreground">{profileUser.education}</p>
-      </div>
-    )}
-
-    {/* Work Section */}
-    {profileUser.work && (
-      <div>
-        <Label>Work</Label>
-        <p className="text-muted-foreground">{profileUser.work}</p>
-      </div>
-    )}
-  </div>
-</CardContent>
+          {/* Education and Work Sections */}
+          <div className="flex justify-between space-y-2 mt-8">
+            {profileUser.education && (
+              <div>
+                <Label>Education</Label>
+                <p className="text-muted-foreground">{profileUser.education}</p>
+              </div>
+            )}
+            {profileUser.work && (
+              <div>
+                <Label>Work</Label>
+                <p className="text-muted-foreground">{profileUser.work}</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
       </div>
 
-{/* Badges and Posts Cards */}
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-  {/* Badges Card */}
-  <Card className="h-fit">
-    <CardHeader>
-      <CardTitle>Badges</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="grid grid-cols-2 gap-4 ml-10">
-        {/* Example Badge Images */}
-        <img
-          src="https://media2.dev.to/dynamic/image/width=180,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fbadge%2Fbadge_image%2F280%2FWriting_Streak_Badges-05.png"
-          alt="Badge 1"
-          className="w-16 h-16 object-cover rounded-full"
-        />
-        <img
-          src="https://preview.redd.it/fsx0sxlz96pd1.png?width=500&height=500&crop=smart&auto=webp&s=d06d8e447b1be9eba7ad045af88b30283669f3a8"
-          alt="Badge 2"
-          className="w-16 h-16 object-cover rounded-full"
-        />
-        <img
-          src="https://media2.dev.to/dynamic/image/width=180,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fbadge%2Fbadge_image%2F355%2Fbadge-1.png"
-          alt="Badge 3"
-          className="w-16 h-16 object-cover rounded-full"
-        />
-        <img
-          src="https://media2.dev.to/dynamic/image/width=180,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fbadge%2Fbadge_image%2F280%2FWriting_Streak_Badges-05.png"
-          alt="Badge 4"
-          className="w-16 h-16 object-cover rounded-full"
-        />
-      </div>
-    </CardContent>
-  </Card>
+      {/* Badges and Posts Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+        {/* Badges Card */}
+        <Card className="h-fit">
+          <CardHeader>
+            <CardTitle>Badges</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4 ml-10">
+              {/* Example Badge Images */}
+              <img
+                src="https://media2.dev.to/dynamic/image/width=180,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fbadge%2Fbadge_image%2F280%2FWriting_Streak_Badges-05.png"
+                alt="Badge 1"
+                className="w-16 h-16 object-cover rounded-full"
+              />
+              <img
+                src="https://preview.redd.it/fsx0sxlz96pd1.png?width=500&height=500&crop=smart&auto=webp&s=d06d8e447b1be9eba7ad045af88b30283669f3a8"
+                alt="Badge 2"
+                className="w-16 h-16 object-cover rounded-full"
+              />
+              <img
+                src="https://media2.dev.to/dynamic/image/width=180,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fbadge%2Fbadge_image%2F355%2Fbadge-1.png"
+                alt="Badge 3"
+                className="w-16 h-16 object-cover rounded-full"
+              />
+              <img
+                src="https://media2.dev.to/dynamic/image/width=180,height=,fit=scale-down,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fbadge%2Fbadge_image%2F280%2FWriting_Streak_Badges-05.png"
+                alt="Badge 4"
+                className="w-16 h-16 object-cover rounded-full"
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-   {/* Posts Card */}
-   <Card className="h-fit shadow-none border-none bg-transparent">
-   <div className="space-y-6">
-        {posts.length > 0 ? (
-          posts.map((post) => <PostCard key={post.id}  post={post} />)
-        ) : (
-          <div>No posts available</div>
-        )}
+        {/* Posts Card */}
+        <Card className="h-fit shadow-none border-none bg-transparent">
+          <div className="space-y-6">
+            {posts.length > 0 ? (
+              posts.map((post) => <PostCard key={post.id} post={post} />)
+            ) : (
+              <div>No posts available</div>
+            )}
+          </div>
+        </Card>
       </div>
-  </Card>
-</div>
-
     </div>
   );
 };

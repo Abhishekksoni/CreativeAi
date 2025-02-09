@@ -12,14 +12,14 @@ import {
 const projects = [
   { name: 'Profile', path: '/settings/profile', icon: Icons?.profile  },
   { name: 'Customization', path: '/settings/customization', icon: Icons?.settings },
-  { name: 'Notifications', path: '/settings/notifications', icon: Icons?.home },
-  { name: 'Account', path: '/settings/account', icon: Icons?.home },
+  { name: 'Notifications', path: '/settings/notifications', icon: Icons?.notification },
+  { name: 'Account', path: '/settings/account', icon: Icons?.account },
 ];
 
 export const SettingSidebarComponent = () => {
   return (
 
-    <SidebarProvider className='fixed top-[6rem] left-8 w-52 '>
+    <SidebarProvider className='fixed top-[6rem] left-4 w-52 '>
 
 
   <SidebarContent>

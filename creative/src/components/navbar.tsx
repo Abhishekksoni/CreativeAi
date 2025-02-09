@@ -173,7 +173,7 @@ export function Navbar({ setIsSidebarOpen }: NavbarProps) {
             <DropdownMenuTrigger asChild>
               <button className="rounded-full focus:outline-none">
                 <Avatar>
-                  <AvatarImage src={user.avatarUrl} alt={user.name} />
+                  <AvatarImage src={user.profilePicture} alt={user.name} />
                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </button>

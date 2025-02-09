@@ -18,7 +18,7 @@ const projects = [
 export const SidebarComponent = () => {
   return (
 
-      <SidebarProvider className='fixed top-[6rem] left-8 w-52'>
+      <SidebarProvider className='fixed top-[6rem] left-4 w-52'>
 
 
   <SidebarContent>

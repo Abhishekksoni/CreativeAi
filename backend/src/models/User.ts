@@ -5,7 +5,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  ManyToMany,
+  JoinTable
 } from 'typeorm';
 import { Post } from "./Post";
 import { Comment } from "./Comment";
@@ -50,6 +52,13 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.author)
   comments?: Comment[];
+
+  @ManyToMany(() => User, user => user.following)
+  @JoinTable()
+  followers!: User[];
+
+  @ManyToMany(() => User, user => user.followers)
+  following!: User[];
 
   @Column({ default: true })
   isActive: boolean = true;
