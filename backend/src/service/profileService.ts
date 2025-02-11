@@ -4,7 +4,8 @@ import { User } from '../models/User';
 
 export class ProfileService {
   static async getProfile(userId: string) {
-    const user = await AppDataSource.getRepository(User).findOne({ where: { id : userId } })
+    const user = await AppDataSource.getRepository(User).findOne({ where: { id : userId },
+      relations: ["followers", "followers.follower", "following", "following.following"],  })
     if (!user) {
       throw new Error('User not found');
     }

@@ -59,10 +59,15 @@ const Profile: React.FC = () => {
         ]);
 
         setProfileUser(profileResponse.data);
+        console.log(profileResponse.data);
+        // console.log("tatatatatat",profileResponse.data.followers.follower.id)
         setPosts(Array.isArray(postsResponse.data) ? postsResponse.data : [postsResponse.data]);
-
+       
         // Check if the current user is following the profile user
-        if (currentUser && profileResponse.data.followers?.includes(currentUser.id)) {
+        if (
+          currentUser &&
+          profileResponse.data.followers?.some((follower) => follower.follower.id === currentUser.id)
+        ) {
           setIsFollowing(true);
         } else {
           setIsFollowing(false);
@@ -81,37 +86,25 @@ const Profile: React.FC = () => {
   const handleFollow = async () => {
     if (!currentUser || !profileUser) return;
 
+    const newFollowingStatus = !isFollowing;
+    setIsFollowing(newFollowingStatus);
+
     try {
-      if (isFollowing) {
-        // Unfollow the user
-        await axios.post(
-          `http://localhost:8000/connect/unfollow/${currentUser.id}/${profileUser.id}`,
-          {},
-          { withCredentials: true }
-        );
-        setIsFollowing(false);
-        // Update the profileUser's followers array locally
-        setProfileUser((prev) => ({
-          ...prev!,
-          followers: prev?.followers?.filter((id) => id !== currentUser.id),
-        }));
-      } else {
-        // Follow the user
-        await axios.post(
-          `http://localhost:8000/connect/follow/${currentUser.id}/${profileUser.id}`,
-          {},
-          { withCredentials: true }
-        );
-        setIsFollowing(true);
-        // Update the profileUser's followers array locally
-        setProfileUser((prev) => ({
-          ...prev!,
-          followers: [...(prev?.followers || []), currentUser.id],
-        }));
-      }
+      const url = newFollowingStatus
+        ? `http://localhost:8000/connect/follow/${currentUser.id}/${profileUser.id}`
+        : `http://localhost:8000/connect/unfollow/${currentUser.id}/${profileUser.id}`;
+
+      await axios.post(url, {}, { withCredentials: true });
+
+      setProfileUser((prev) => ({
+        ...prev!,
+        followers: newFollowingStatus
+          ? [...(prev?.followers || []), currentUser.id]
+          : prev?.followers?.filter((id) => id !== currentUser.id),
+      }));
     } catch (err) {
-      console.error("Error following/unfollowing user:", err);
-      setError("Failed to update follow status. Please try again later.");
+      console.error("Error updating follow status:", err);
+      setIsFollowing(!newFollowingStatus); // Revert UI change if error occurs
     }
   };
 

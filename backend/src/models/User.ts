@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Post } from "./Post";
 import { Comment } from "./Comment";
+import { UserFollow } from "./Folllow";
 
 @Entity('users')
 export class User {
@@ -53,12 +54,14 @@ export class User {
   @OneToMany(() => Comment, (comment) => comment.author)
   comments?: Comment[];
 
-  @ManyToMany(() => User, user => user.following)
-  @JoinTable()
-  followers!: User[];
-
-  @ManyToMany(() => User, user => user.followers)
-  following!: User[];
+   // Followers (users who follow this user)
+   @OneToMany(() => UserFollow, (userFollow) => userFollow.following)
+   followers!: UserFollow[];
+ 
+   // Following (users this user follows)
+   @OneToMany(() => UserFollow, (userFollow) => userFollow.follower)
+   following!: UserFollow[];
+ 
 
   @Column({ default: true })
   isActive: boolean = true;
