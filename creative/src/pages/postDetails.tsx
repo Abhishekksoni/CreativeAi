@@ -1,4 +1,5 @@
 import { CommentSection } from "@/components/comments";
+import { Icons } from "@/components/icons";
 import { Navbar } from "@/components/navbar";
 import { SidebarComponent } from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom"; 
+
 
 
 
@@ -31,6 +33,7 @@ const PostDetailsPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
+
 
   useEffect(() => {
     axios.get(`http://localhost:8000/post/${postId}`).then((response) => {
@@ -152,6 +155,36 @@ const PostDetailsPage: React.FC = () => {
                   </div>
 
                 )}
+                 {/* Interaction Icons */}
+                      <div className="flex items-center justify-between mt-3">
+                        <div className="flex items-center space-x-6">
+                          {/* Like Icon */}
+                          <div className="flex items-center space-x-1  cursor-pointer hover:text-gray-800">
+                          <button  className="cursor-pointer hover:text-gray-800">
+                            <Icons.reaction className="w-5 h-5" />
+                            </button>
+                            {/* <span className="text-sm">Like</span> */}
+                          </div>
+                
+                          {/* Comment Icon */}
+                          <div className="flex items-center space-x-1  cursor-pointer hover:text-gray-800">
+                            <Icons.comment className="w-5 h-5" />
+                            <span className="text-sm">{post.comments}</span>
+                          </div>
+                          {/* Comment Icon */}
+                          <div className="flex items-center space-x-1  cursor-pointer hover:text-gray-800">
+                            <Icons.save className="w-5 h-5" />
+                            {/* <span className="text-sm">{post.comments}</span> */}
+                          </div>
+                        </div>
+                
+                        {/* Save Icon */}
+                        <div className="cursor-pointer hover:text-gray-800">
+                          <Icons.share className="w-5 h-5" />
+                        </div>
+                      </div>
+
+
                  {/* Comment Section */}
                  <CommentSection
           postId={postId}

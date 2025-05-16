@@ -50,7 +50,7 @@
 
 // export { sequelize, connectDB };
 
-// // This file should be placed inside the 'config' folder and named 'database.ts'
+
 import { DataSource } from 'typeorm';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -65,7 +65,7 @@ const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [path.join(__dirname, '../models/**/*.{ts,js}')],
-  synchronize: true, // use only in development
+  synchronize: true, 
   logging: true
 });
 

@@ -6,6 +6,7 @@ import { AppDataSource, connectDB } from './config/database';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import authRoutes from './routes/authRoutes';
 import postRoutes from './routes/postRoutes';
+import imageUploadRoutes from './routes/imageUpload';
 import followRoutes from './routes/followRoutes';
 import commentRoutes from './routes/commentRoutes';
 import { config } from './config/dotenvConfig';
@@ -29,6 +30,11 @@ app.use(
     optionsSuccessStatus: 200
   })
 );
+
+
+
+
+
 
 // Logging middleware to debug requests
 // app.use((req, res, next) => {
@@ -111,6 +117,7 @@ app.use('/auth', authRoutes);
 app.use('/post', postRoutes);
 app.use('/comment', commentRoutes);
 app.use('/connect', followRoutes);
+app.use('/getUrl', imageUploadRoutes)
 
 // Root route for debugging session persistence
 // app.get('/', (req, res) => {

@@ -26,6 +26,22 @@ export class PostController {
     }
   }
 
+  // static async toggleReaction(req: Request, res: Response): Promise<void> {
+  //   try {
+  //     const { postId } = req.params;
+  //     if (!req.user || !req.user.id) {
+  //       res.status(401).json({ message: "Unauthorized" });
+  //       return;
+  //     }
+  //     const userId = req.user?.id; // Assuming authentication middleware adds `user` to `req`
+
+  //     const result = await PostService.toggleReaction(userId, postId);
+  //      res.status(200).json(result);
+  //   } catch (error:any) {
+  //      res.status(500).json({ message: error.message || "Server error" });
+  //   }
+  // }
+
   static async getAllPosts(req: Request, res: Response): Promise<void> {
     try {
       const posts = await PostService.getAllPosts();

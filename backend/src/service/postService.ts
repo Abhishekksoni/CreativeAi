@@ -15,6 +15,52 @@ export class PostService {
     return await AppDataSource.getRepository(Post).save(newPost);
   }
 
+  // static async toggleReaction(userId: string, postId: string) {
+  //   const reactionRepo = AppDataSource.getRepository(PostReaction);
+  //   const postRepo = AppDataSource.getRepository(Post);
+  //   const userRepo = AppDataSource.getRepository(User);
+
+  //   const post = await postRepo.findOne({where:{id:postId}});
+  //   if (!post) throw new Error("Post not found");
+
+  //   const user = await userRepo.findOne({where: {id :userId}});
+  //   if (!user) throw new Error("User not found");
+
+  //   const existingReaction = await reactionRepo.findOne({ where: { post, user } });
+
+  //   if (existingReaction) {
+  //     await reactionRepo.remove(existingReaction);
+  //     return { message: "Reaction removed" };
+  //   } else {
+  //     const newReaction = reactionRepo.create({ post, user });
+  //     await reactionRepo.save(newReaction);
+  //     return { message: "Post liked" };
+  //   }
+  // }
+
+  // static async toggleSavePost(userId: string, postId: string) {
+  //   const saveRepo = getRepository(SavedPost);
+  //   const postRepo = getRepository(Post);
+  //   const userRepo = getRepository(User);
+
+  //   const post = await postRepo.findOne(postId);
+  //   if (!post) throw new Error("Post not found");
+
+  //   const user = await userRepo.findOne(userId);
+  //   if (!user) throw new Error("User not found");
+
+  //   const existingSave = await saveRepo.findOne({ where: { post, user } });
+
+  //   if (existingSave) {
+  //     await saveRepo.remove(existingSave);
+  //     return { message: "Post unsaved" };
+  //   } else {
+  //     const newSave = saveRepo.create({ post, user });
+  //     await saveRepo.save(newSave);
+  //     return { message: "Post saved" };
+  //   }
+  // }
+
   static async getAllPosts() {
     return await AppDataSource.getRepository(Post).find({ relations: ["author"] });
   }
