@@ -21,11 +21,11 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
 
 export const buildProfile = async (req: Request, res: Response, next: NextFunction) => {
 
-    const { userId } = req.params;
+    const { id: userId } = req.params; // Fix: use 'id' instead of 'userId' to match route parameter
     const { userName, bio } = req.body;
 
     try {
-      const updatedUser = await ProfileService.buildProfile((userId), userName, bio);
+      const updatedUser = await ProfileService.buildProfile(userId, userName, bio);
       
       res.status(200).json(updatedUser);
     } catch (error:any) {

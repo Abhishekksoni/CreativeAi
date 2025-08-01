@@ -77,7 +77,8 @@ export class PostService {
     const postRepository = AppDataSource.getRepository(Post);
     const post = await postRepository.findOne({ where: { id }, relations: ["author"] });
 
-    if (!post ) throw new Error("Unauthorized");
+    if (!post) throw new Error("Post not found");
+    if (post.authorId !== userId) throw new Error("Unauthorized - You can only edit your own posts");
 
     Object.assign(post, postData);
     return await postRepository.save(post);
@@ -87,7 +88,8 @@ export class PostService {
     const postRepository = AppDataSource.getRepository(Post);
     const post = await postRepository.findOne({ where: { id }, relations: ["author"] });
 
-    if (!post ) throw new Error("Unauthorized");
+    if (!post) throw new Error("Post not found");
+    if (post.authorId !== userId) throw new Error("Unauthorized - You can only delete your own posts");
 
     await postRepository.remove(post);
   }

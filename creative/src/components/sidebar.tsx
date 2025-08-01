@@ -11,8 +11,8 @@ import {
 
 const projects = [
   { name: 'Dashboard', path: '/', icon: Icons?.home },
-  { name: 'Analytics', path: '/analytics', icon: Icons?.home },
-  { name: 'Settings', path: '/settings', icon: Icons?.home },
+  // { name: 'Analytics', path: '/analytics', icon: Icons?.home },
+  { name: 'Settings', path: '/settings', icon: Icons?.settings },
 ];
 
 export const SidebarComponent = () => {

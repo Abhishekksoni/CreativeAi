@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 import axios from "axios";
+import SearchComponent from "./searchComponent";
 // import { useAuth } from "@/components/authContext"; // Adjust the import based on your auth context
 
 const ThemeToggle = () => {
@@ -158,28 +159,20 @@ export function Navbar({ setIsSidebarOpen }: NavbarProps) {
       className="h-[90px] object-contain dark:invert dark:brightness-200"
     />
   </Link>
-      <div className="hidden md:flex  space-x-2 flex-1 max-w-2xl mx-8">
-        {/* Search Box */}
-        <div className="relative flex-1 w-auto">
-          <input
-            type="text"
-            placeholder="Search posts, users, or topics..."
-            className="w-full px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-          />
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
-
-
+      <div className="hidden md:flex items-center space-x-4 flex-1 max-w-2xl mx-8">
+        <SearchComponent />
       </div>
 
       <div className="flex items-center space-x-4">
-                {/* Create Post Button */}
-                <Button 
-          onClick={() => setIsModalOpen(true)}
+                        {/* Create Post Button */}
+        <Button 
+          onClick={() => {
+            if (user) {
+              setIsModalOpen(true);
+            } else {
+              navigate("/login");
+            }
+          }}
           className="hidden md:flex px-4 py-2 rounded-lg items-center space-x-2"
         >
           {/* <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

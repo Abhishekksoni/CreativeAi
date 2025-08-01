@@ -9,6 +9,7 @@ import postRoutes from './routes/postRoutes';
 import imageUploadRoutes from './routes/imageUpload';
 import followRoutes from './routes/followRoutes';
 import commentRoutes from './routes/commentRoutes';
+import searchRoutes from './routes/searchRoutes';
 import { config } from './config/dotenvConfig';
 import './config/passport'; // Ensure passport is configured before routes
 import { User } from './models/User';
@@ -117,7 +118,8 @@ app.use('/auth', authRoutes);
 app.use('/post', postRoutes);
 app.use('/comment', commentRoutes);
 app.use('/connect', followRoutes);
-app.use('/getUrl', imageUploadRoutes)
+app.use('/getUrl', imageUploadRoutes);
+app.use('/search', searchRoutes);
 
 // Root route for debugging session persistence
 // app.get('/', (req, res) => {

@@ -1,39 +1,38 @@
 // src/components/scrollRestoration.tsx
-import { getScrollPosition, saveScrollPosition } from "@/utils/scrollManger";
-import { useEffect, useRef } from "react";
-import { useLocation, useNavigationType } from "react-router-dom";
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
-
-const ScrollRestoration = () => {
+const ScrollRestoration: React.FC = () => {
   const location = useLocation();
-  const navigationType = useNavigationType();
-  const prevLocationKey = useRef(location.key);
 
-  // ✅ Save scroll when leaving a route (before render updates)
   useEffect(() => {
+    // Scroll to top on route change
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    // Save scroll position before unload
     const handleBeforeUnload = () => {
-      saveScrollPosition(prevLocationKey.current);
+      sessionStorage.setItem('scrollPosition', window.scrollY.toString());
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    // Restore scroll position on page load
+    const handleLoad = () => {
+      const savedPosition = sessionStorage.getItem('scrollPosition');
+      if (savedPosition) {
+        window.scrollTo(0, parseInt(savedPosition));
+        sessionStorage.removeItem('scrollPosition');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('load', handleLoad);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('load', handleLoad);
+    };
   }, []);
-
-  // ✅ Save scroll when navigating away (before the new page is shown)
-  useEffect(() => {
-    saveScrollPosition(prevLocationKey.current);
-    prevLocationKey.current = location.key;
-  }, [location.key]);
-
-  // ✅ Restore scroll on POP (back/forward)
-  useEffect(() => {
-    if (navigationType === "POP") {
-      const y = getScrollPosition(location.key);
-      requestAnimationFrame(() => {
-        window.scrollTo(0, y);
-      });
-    }
-  }, [location.key, navigationType]);
 
   return null;
 };

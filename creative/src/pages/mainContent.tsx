@@ -9,10 +9,12 @@ import { Post } from "@/types/post";
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 const MainContentPage: React.FC = () => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -101,7 +103,13 @@ const MainContentPage: React.FC = () => {
       <ToastContainer />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Trending Posts</h1>
-        <Button onClick={() => setIsModalOpen(true)}>Create Post</Button>
+        <Button onClick={() => {
+          if (user) {
+            setIsModalOpen(true);
+          } else {
+            navigate("/login");
+          }
+        }}>Create Post</Button>
       </div>
 
       <div className="space-y-6">
