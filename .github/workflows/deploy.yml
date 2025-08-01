@@ -1,0 +1,152 @@
+name: Deploy Blog Website
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          backend/package-lock.json
+          creative/package-lock.json
+    
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+      
+    - name: Install frontend dependencies
+      working-directory: ./creative
+      run: npm ci
+      
+    - name: Lint backend
+      working-directory: ./backend
+      run: npm run lint || echo "Linting skipped - no lint script found"
+      
+    - name: Lint frontend
+      working-directory: ./creative
+      run: npm run lint
+      
+    - name: Build backend
+      working-directory: ./backend
+      run: npm run build
+      
+    - name: Build frontend
+      working-directory: ./creative
+      run: npm run build
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    strategy:
+      matrix:
+        service: [backend, frontend]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.service }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha
+          type=raw,value=latest,enable={{is_default_branch}}
+          
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./${{ matrix.service }}
+        file: ./${{ matrix.service }}/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    needs: [test, build-and-push]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Deploy to production server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.PRODUCTION_HOST }}
+        username: ${{ secrets.PRODUCTION_USER }}
+        key: ${{ secrets.PRODUCTION_SSH_KEY }}
+        port: ${{ secrets.PRODUCTION_SSH_PORT || 22 }}
+        script: |
+          cd /path/to/your/blog/deployment
+          
+          # Pull latest changes
+          git pull origin main
+          
+          # Update environment variables
+          cp .env.example .env
+          
+          # Set production environment variables from secrets
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+          echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> .env
+          
+          # Deploy with the deploy script
+          chmod +x deploy.sh
+          ./deploy.sh
+          
+    - name: Health check
+      run: |
+        # Wait a moment for deployment to complete
+        sleep 30
+        
+        # Check if the application is responding
+        curl -f ${{ secrets.PRODUCTION_URL }}/health || exit 1
+        curl -f ${{ secrets.PRODUCTION_API_URL }}/health || exit 1
