@@ -130,6 +130,7 @@ const MainContentPage: React.FC = () => {
               placeholder="Write your content here..."
               value={postContent}
               onChange={(e) => setPostContent(e.target.value)}
+              maxLength={3000}
             />
             {/* for image upload */}
             <div className="w-full">

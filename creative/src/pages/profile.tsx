@@ -135,8 +135,8 @@ const Profile: React.FC = () => {
       <div className="bg-background rounded-lg shadow-none lg:shadow lg:border">
         <CardHeader>
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-            <Avatar className="w-32 h-32">
-              <AvatarImage src={profileUser.avatar || "/default-avatar.png"} alt={profileUser.name} />
+            <Avatar className="w-32 h-32 ">
+              <AvatarImage src={profileUser.profilePicture || "/default-avatar.png"} alt={profileUser.name} className="object-cover"/>
               <AvatarFallback>{profileUser.name.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col space-y-2">

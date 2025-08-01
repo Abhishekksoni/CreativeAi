@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { uploadImage } from "@/components/aws";
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -20,9 +21,10 @@ type EducationWorkEntry = {
 };
 
 const EditProfilePage: React.FC = () => {
-  const { user, updateUser } = useContext(AuthContext);
+  const { user, updateUser, refreshUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Profile State
   const [username, setUsername] = useState('');
@@ -59,6 +61,19 @@ const EditProfilePage: React.FC = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+      
       setProfileImage(file);
       setProfileImagePreview(URL.createObjectURL(file));
     }
@@ -90,12 +105,28 @@ const EditProfilePage: React.FC = () => {
     setIsSubmitting(true);
   
     try {
+      let profilePictureUrl = profileImagePreview;
+      
+      // If there's a new profile image, upload it to S3 first
+      if (profileImage) {
+        setIsUploadingImage(true);
+        const uploadedUrl = await uploadImage(profileImage);
+        setIsUploadingImage(false);
+        
+        if (uploadedUrl) {
+          profilePictureUrl = uploadedUrl;
+        } else {
+          toast.error('Failed to upload profile picture');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const data = {
         userName: username,
         email: email,
         bio: bio,
-        profilePicture:profileImage
-        // Add profileImage if handling file uploads
+        profilePicture: profilePictureUrl
       };
   
       const profileRes = await axios.put(
@@ -109,8 +140,13 @@ const EditProfilePage: React.FC = () => {
         }
       );
   
-      updateUser(profileRes.data);
+      // Refresh user data from server to get the latest profile picture
+      await refreshUser();
+      
       toast.success('Profile updated successfully!');
+      
+      // Clear the profile image state after successful upload
+      setProfileImage(null);
     } catch (error) {
       toast.error('Failed to update profile');
       console.error("Error:", error);
@@ -141,7 +177,12 @@ const EditProfilePage: React.FC = () => {
                     alt="Profile" 
                     className="w-24 h-24 rounded-full object-cover"
                   />
-                  <label className="absolute bottom-0 right-0 bg-background p-1 rounded-full border cursor-pointer">
+                  {profileImage && (
+                    <div className="absolute top-0 right-0 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                      New
+                    </div>
+                  )}
+                  <label className="absolute bottom-0 right-0 bg-background p-1 rounded-full border cursor-pointer hover:bg-gray-100 transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -155,6 +196,12 @@ const EditProfilePage: React.FC = () => {
                     </svg>
                   </label>
                 </div>
+                {profileImage && (
+                  <div className="text-sm text-gray-600">
+                    <p>Selected: {profileImage.name}</p>
+                    <p className="text-xs text-gray-500">Image will be uploaded when you save</p>
+                  </div>
+                )}
               </div>
 
               <div className="grid gap-4">
@@ -271,9 +318,9 @@ const EditProfilePage: React.FC = () => {
           <Button
             type="submit"
             className="w-full md:w-auto"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isUploadingImage}
           >
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
+            {isUploadingImage ? 'Uploading Image...' : isSubmitting ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </form>

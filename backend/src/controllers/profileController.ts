@@ -60,12 +60,15 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     
     const { userName, bio, profilePicture } = req.body;
     
+    console.log("Profile update request body:", { userName, bio, profilePicture });
 
     const updatedProfile = await ProfileService.updateProfile(userId, {
       userName,
       bio,
       profilePicture,
     });
+
+    console.log("Updated profile response:", updatedProfile);
 
     res.status(200).json(updatedProfile);
   } catch (err) {

@@ -15,7 +15,7 @@ const DashboardLayout = () => {
             <div className="flex flex-1 mt-[60px] relative">
                 {/* Sidebar Section */}
                 <aside
-                    className={`fixed top-0 inset-y-0 left-0 w-60 bg-white  dark:bg-black  transition-transform duration-300 transform
+                    className={`fixed top-0 inset-y-0 left-0 w-60 bg-white  dark:bg-[#030712]  transition-transform duration-300 transform
             ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
             lg:translate-x-0 z-40`}
                 >

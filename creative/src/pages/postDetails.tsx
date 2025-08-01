@@ -4,9 +4,11 @@ import { Navbar } from "@/components/navbar";
 import { SidebarComponent } from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom"; 
+import { Link, useParams } from "react-router-dom";
+import creativeAiLogo from "@/assets/creativeAi.png"; 
 
 
 
@@ -34,10 +36,32 @@ const PostDetailsPage: React.FC = () => {
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
 
+  // Helper function to get profile picture URL
+  const getProfilePictureUrl = (author: any): string | undefined => {
+    if (!author) return undefined;
+    
+    // Try different possible field names
+    const possibleFields = ['avatar', 'profilePicture', 'profile_picture'];
+    for (const field of possibleFields) {
+      if (author[field]) {
+        try {
+          // Try to parse as JSON first (in case it's stored as JSON string)
+          const parsed = JSON.parse(author[field]);
+          return typeof parsed === 'string' ? parsed : author[field];
+        } catch {
+          // If parsing fails, return the original string
+          return author[field];
+        }
+      }
+    }
+    return undefined;
+  };
+
 
   useEffect(() => {
     axios.get(`http://localhost:8000/post/${postId}`).then((response) => {
       setPost(response.data);
+      console.log('Post author data:', response.data.author);
     });
 
     axios.get(`http://localhost:8000/comment/${postId}`).then((response) => {
@@ -103,7 +127,7 @@ const PostDetailsPage: React.FC = () => {
               <div className="flex flex-1 mt-[60px] relative">
                   {/* Sidebar Section */}
                   <aside
-                      className={`fixed top-14 inset-y-0 left-0 w-64 bg-white dark:bg-black border-r transition-transform duration-300 transform
+                      className={`fixed inset-y-0 left-0 w-64  bg-white  dark:bg-[#030712] border-r transition-transform duration-300 transform
               ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
               lg:translate-x-0 z-40`}
                   >
@@ -124,13 +148,14 @@ const PostDetailsPage: React.FC = () => {
         >
           <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-2">
-                    {post.author.profilePicture && (
-                      <img
-                        src={post.author.profilePicture}
+                    <Avatar className="w-6 h-6">
+                      <AvatarImage
+                      className="object-cover"
+                        src={getProfilePictureUrl(post.author) || "/default-avatar.png"}
                         alt={post.author.userName}
-                        className="w-6 h-6 rounded-full object-cover"
                       />
-                    )}
+                      <AvatarFallback>{post.author.userName.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
                     <span className="text-sm">{post.author.userName}</span>
                   </div>
                   {/* <span className="text-xs text-gray-400">{timeAgo}</span> */}
@@ -142,7 +167,7 @@ const PostDetailsPage: React.FC = () => {
                 </h2>
           
                 {/* Post Content */}
-                <p className="text-sm mt-2 line-clamp-2">{post.content}</p>
+                <p className="text-sm mt-2 ">{post.content}</p>
           
                 {/* Post Image */}
                 {post.imageUrl && (
@@ -195,22 +220,23 @@ const PostDetailsPage: React.FC = () => {
        
 
         {/* Ads Section (Visible only on md+ screens) */}
-        <aside className="w-1/6 min-w-[400px] border-l hidden lg:block border-gray-200 dark:border-gray-700 z-0">
-            <div className="p-5 ml-6 mt-3 border rounded-lg max-w-[350px]">
+        <aside className="w-1/6 min-w-[300px] border-l hidden lg:block border-gray-200 dark:border-gray-700 z-0">
+            <div className="p-5 ml-6 mt-3 border rounded-lg max-w-[260px]">
                 <h2 className="text-xl font-semibold">
                 <div className="flex space-x-2">
-                    {post.author.profilePicture && (
-                      <img
-                        src={post.author.profilePicture}
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage
+                      className="object-cover"
+                        src={getProfilePictureUrl(post.author) || "/default-avatar.png"}
                         alt={post.author.userName}
-                        className="w-8 h-8 rounded-full object-cover"
                       />
-                    )}
+                      <AvatarFallback>{post.author.userName.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
                     <span className="text-md">{post.author.userName}</span>
                   </div>
                 </h2>
                 {/* <p className="text-gray-500">Advertise your content here.</p> */}
-                <Button className="items-center mt-4 min-w-[300px]">Follow</Button>
+                <Button className="items-center mt-4 min-w-[220px]">Follow</Button>
             </div>
         </aside>
     </div>

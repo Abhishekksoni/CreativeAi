@@ -7,7 +7,8 @@ interface User {
   id: string;
   userName: string;
   name: string;
-  profilePicture: string;
+  profilePicture?: string;
+  avatar?: string;
   email: string;
 }
 
@@ -18,6 +19,7 @@ interface AuthContextType {
   login: () => void;
   logout: () => Promise<void>;
   updateUser: (updatedFields: Partial<User>) => void; // ✅ Add updateUser function
+  refreshUser: () => Promise<void>; // Add refresh function
 }
 
 // Create context with default values
@@ -27,6 +29,7 @@ export const AuthContext = createContext<AuthContextType>({
   login: () => {},
   logout: async () => {},
   updateUser: () => {}, // ✅ Provide a default empty function
+  refreshUser: async () => {}, // Add default refresh function
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -75,6 +78,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser((prevUser) => (prevUser ? { ...prevUser, ...updatedFields } : prevUser));
   };
 
+  // Function to refresh user data from server
+  const refreshUser = async () => {
+    await fetchUserProfile();
+  };
+
   // Generic error handler function
   const handleAuthError = (error: unknown) => {
     if (axios.isAxiosError(error)) {
@@ -89,7 +97,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

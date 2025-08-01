@@ -12,6 +12,7 @@ import ProfileBuilder from "@/pages/buildProfile";
 import MainLayout from "./layout/mainLayout";
 import ProfileSettings from "./pages/settings/setting";
 import EditProfilePage from "./pages/settings/profileSetting";
+import ScrollRestoration from "./components/scrollRestoration";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,6 +21,7 @@ function App() {
     <AuthProvider>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Router>
+        <ScrollRestoration />
           <Routes>
             {/* Routes using the MainLayout (with Navbar) */}
             <Route element={<MainLayout isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />}>

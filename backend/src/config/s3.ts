@@ -1,24 +1,28 @@
 // config/s3.ts
-import AWS from "aws-sdk";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {nanoid} from 'nanoid';
 import dotenv from 'dotenv';
 import path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-export const s3 = new AWS.S3({
+export const s3Client = new S3Client({
   region: process.env.AWS_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
 });
 
 export const generateURL = async () => {
     const date = new Date();
     const imageName = `${nanoid()}-${date.getDate()}.jpeg`
   
-    return await s3.getSignedUrlPromise('putObject', {
+    const command = new PutObjectCommand({
       Bucket: "creativee-ai",
       Key: imageName,
-      Expires: 1000,
       ContentType: "image/jpeg"
-    })
+    });
+
+    return await getSignedUrl(s3Client, command, { expiresIn: 1000 });
   }

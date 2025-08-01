@@ -4,6 +4,7 @@ import { Link } from "react-router-dom"; // Assuming React Router for navigation
 import { Icons } from "./icons";
 import { formatDistanceToNow } from "date-fns";
 import { User } from "@/types/user";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface PostCardProps {
   post: Post;
@@ -17,14 +18,14 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <Link to={`/post/${post.id}`} >
       {/* Author and Date */}
       <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          {post.author.profilePicture && (
-            <img
-              src={post.author.profilePicture}
+                <div className="flex items-center space-x-2">
+          <Avatar className="w-6 h-6">
+            <AvatarImage
+              src={post.author.profilePicture || "/default-avatar.png"}
               alt={post.author.userName}
-              className="w-6 h-6 rounded-full object-cover"
             />
-          )}
+            <AvatarFallback>{post.author.userName.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
            <Link to={`/profile/${post.author.id}`} className="hover:underline">
           <span className="text-sm">{post.author.userName}</span>
           </Link>
