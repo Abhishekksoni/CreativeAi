@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: blog_db_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - blog-dev-network
+
+  # Backend API (Development)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: blog_db_dev
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+      - ./backend/tsconfig.json:/app/tsconfig.json
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - blog-dev-network
+    command: npm run dev
+
+  # Frontend (Development)
+  frontend:
+    build:
+      context: ./creative
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:3000
+    volumes:
+      - ./creative/src:/app/src
+      - ./creative/public:/app/public
+      - ./creative/package.json:/app/package.json
+      - ./creative/vite.config.ts:/app/vite.config.ts
+      - ./creative/tsconfig.json:/app/tsconfig.json
+      - ./creative/tailwind.config.js:/app/tailwind.config.js
+    ports:
+      - "5173:5173"
+    networks:
+      - blog-dev-network
+    command: npm run dev -- --host
+
+  # Redis (for session storage)
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - blog-dev-network
+
+volumes:
+  postgres_dev_data:
+    driver: local
+
+networks:
+  blog-dev-network:
+    driver: bridge

@@ -126,6 +126,15 @@ app.use('/search', searchRoutes);
 //   res.send(`User: ${JSON.stringify(req.user)}`);
 // });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    service: 'blog-backend',
+    version: '1.0.0'
+  });
+});
 
 // Start the server
 const PORT = process.env.PORT || 8000;
