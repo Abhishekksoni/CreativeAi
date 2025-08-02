@@ -1,5 +1,5 @@
 import { Bookmark, CrossIcon, Heart, Share } from "lucide-react";
-import { FaCheck, FaComment, FaHome, FaMoon, FaSpinner, FaSun, FaUser } from "react-icons/fa";
+import { FaCheck, FaComment, FaGithub, FaHome, FaLinkedin, FaMoon, FaSpinner, FaSun, FaUser } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { HiBars3 } from "react-icons/hi2";
 import EmojiIcon from "./reactIcons";
@@ -18,6 +18,9 @@ export const Icons = {
   spinner: FaSpinner,
   close: CrossIcon,
   check: FaCheck,
+  linkedin: FaLinkedin,
+  github: FaGithub,
+  // github: FaGithub,
   // settings: IoMdSettings,
   
   // Multiple emoji icons

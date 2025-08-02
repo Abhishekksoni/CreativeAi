@@ -11,6 +11,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+import LandingPage from "./landingPage";
 
 const MainContentPage: React.FC = () => {
   const { user } = useContext(AuthContext);
@@ -94,6 +95,11 @@ const MainContentPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Show landing page for unauthenticated users
+  if (!user) {
+    return <LandingPage />;
+  }
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
